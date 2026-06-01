@@ -1,0 +1,418 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Punto de fuga: 960, 540 (centro) -->
+    <!-- Apertura del túnel: x=480..1440, y=100..980 -->
+
+    <!-- Paredes laterales -->
+    <linearGradient id="wL" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#4a2c0e"/>
+      <stop offset="60%"  stop-color="#2e1a08"/>
+      <stop offset="100%" stop-color="#180d04" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="wR" x1="100%" y1="0%" x2="0%" y2="0%">
+      <stop offset="0%"   stop-color="#4a2c0e"/>
+      <stop offset="60%"  stop-color="#2e1a08"/>
+      <stop offset="100%" stop-color="#180d04" stop-opacity="0.3"/>
+    </linearGradient>
+
+    <!-- Techo y piso -->
+    <linearGradient id="ceil" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#3a1e06"/>
+      <stop offset="100%" stop-color="#0e0700" stop-opacity="0.2"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%"   stop-color="#221206"/>
+      <stop offset="100%" stop-color="#0e0700" stop-opacity="0.2"/>
+    </linearGradient>
+
+    <!-- Piedras: caras iluminadas y en sombra para simular volumen -->
+    <linearGradient id="rock_lit" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#6b4a28"/>
+      <stop offset="100%" stop-color="#3d2510"/>
+    </linearGradient>
+    <linearGradient id="rock_shad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#2e1a08"/>
+      <stop offset="100%" stop-color="#160c04"/>
+    </linearGradient>
+    <linearGradient id="rock_mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#523818"/>
+      <stop offset="100%" stop-color="#2a1608"/>
+    </linearGradient>
+
+    <!-- Madera tirantes -->
+    <linearGradient id="wd_v" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#8B5E2A"/>
+      <stop offset="30%"  stop-color="#A0722A"/>
+      <stop offset="70%"  stop-color="#7A5020"/>
+      <stop offset="100%" stop-color="#5C3A14"/>
+    </linearGradient>
+    <linearGradient id="wd_h" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#7A5020"/>
+      <stop offset="50%"  stop-color="#9A6830"/>
+      <stop offset="100%" stop-color="#5C3A14"/>
+    </linearGradient>
+    <linearGradient id="wd_top" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"  stop-color="#B8824A"/>
+      <stop offset="100%" stop-color="#7A5020"/>
+    </linearGradient>
+
+    <!-- Lámparas -->
+    <radialGradient id="lamp_glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#FFF5C0" stop-opacity="1"/>
+      <stop offset="25%"  stop-color="#FFD700" stop-opacity="0.95"/>
+      <stop offset="70%"  stop-color="#FF9900" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#FF6600" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lamp_cone" cx="50%" cy="0%" r="80%">
+      <stop offset="0%"   stop-color="#FFE88A" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#FF8800" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lamp_body" cx="35%" cy="30%">
+      <stop offset="0%"  stop-color="#F0C840"/>
+      <stop offset="60%"  stop-color="#C8A020"/>
+      <stop offset="100%" stop-color="#7A6010"/>
+    </radialGradient>
+
+    <!-- Fades para transición al centro -->
+    <linearGradient id="fadeL" x1="100%" y1="0%" x2="70%" y2="0%">
+      <stop offset="0%"  stop-color="#000" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="fadeR" x1="0%" y1="0%" x2="30%" y2="0%">
+      <stop offset="0%"  stop-color="#000" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Sombras borde -->
+    <linearGradient id="shadT" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"  stop-color="#000" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="shadB" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%"  stop-color="#000" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Niebla profundidad -->
+    <radialGradient id="fog" cx="50%" cy="50%" r="35%">
+      <stop offset="0%"   stop-color="#3a2208" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#000"    stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="blur3"><feGaussianBlur stdDeviation="3"/></filter>
+    <filter id="blur8"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="blur18"><feGaussianBlur stdDeviation="18"/></filter>
+  </defs>
+
+  <!--
+  ═══════════════════════════════════════════
+  PARED IZQUIERDA — Perspectiva en trapezoide
+  Frente: x=0, y=0..1080
+  Apertura interior: x=480, y=100..980
+  ═══════════════════════════════════════════
+  -->
+
+  <!-- Base de la pared izq -->
+  <polygon points="0,0 480,100 480,980 0,1080" fill="url(#wL)"/>
+
+  <!--
+    Bloques de piedra con volumen (cara lit + cara shadow).
+    Cada bloque tiene: cara frontal (más clara) y cara superior/lateral (más oscura)
+    siguiendo el plano de perspectiva.
+  -->
+
+  <!-- Fila 1 bloques - zona alta -->
+  <!-- Bloque 1A cara frontal -->
+  <polygon points="0,0   195,100 178,168 0,55"    fill="url(#rock_lit)"/>
+  <polygon points="0,55  178,168 165,198 0,82"    fill="url(#rock_shad)" opacity="0.7"/>
+  <!-- Bloque 1B -->
+  <polygon points="178,102 390,118 375,185 162,170" fill="url(#rock_mid)"/>
+  <polygon points="162,170 375,185 362,210 148,196" fill="url(#rock_shad)" opacity="0.6"/>
+  <!-- Bloque 1C borde apertura -->
+  <polygon points="375,118 480,100 480,155 362,188" fill="url(#rock_lit)" opacity="0.8"/>
+
+  <!-- Fila 2 -->
+  <polygon points="0,82   165,195 148,290 0,185"   fill="url(#rock_mid)"/>
+  <polygon points="0,185  148,290 136,320 0,215"   fill="url(#rock_shad)" opacity="0.65"/>
+  <polygon points="148,196 362,210 345,310 132,298" fill="url(#rock_lit)"/>
+  <polygon points="132,298 345,310 332,338 118,326" fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="345,210 480,155 480,248 332,315" fill="url(#rock_mid)" opacity="0.85"/>
+
+  <!-- Fila 3 -->
+  <polygon points="0,215  136,318 120,415 0,320"   fill="url(#rock_lit)"/>
+  <polygon points="0,320  120,415 108,445 0,350"   fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="118,326 332,338 316,440 104,432" fill="url(#rock_mid)"/>
+  <polygon points="104,432 316,440 304,468 90,460"  fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="316,315 480,248 480,342 304,435" fill="url(#rock_lit)" opacity="0.8"/>
+
+  <!-- Fila 4 - zona media -->
+  <polygon points="0,350  108,443 92,545 0,455"    fill="url(#rock_mid)"/>
+  <polygon points="0,455  92,545 80,575 0,488"     fill="url(#rock_shad)" opacity="0.65"/>
+  <polygon points="90,460 304,468 288,572 76,562"  fill="url(#rock_lit)"/>
+  <polygon points="76,562 288,572 276,600 62,590"  fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="288,435 480,342 480,438 276,568" fill="url(#rock_mid)" opacity="0.8"/>
+
+  <!-- Fila 5 -->
+  <polygon points="0,488  80,572 65,675 0,592"     fill="url(#rock_lit)"/>
+  <polygon points="0,592  65,675 52,705 0,625"     fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="62,590 276,600 260,705 48,695"  fill="url(#rock_mid)"/>
+  <polygon points="48,695 260,705 248,732 35,722"  fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="260,568 480,438 480,535 248,700" fill="url(#rock_lit)" opacity="0.75"/>
+
+  <!-- Fila 6 -->
+  <polygon points="0,625  52,703 38,808 0,730"     fill="url(#rock_mid)"/>
+  <polygon points="0,730  38,808 25,838 0,762"     fill="url(#rock_shad)" opacity="0.65"/>
+  <polygon points="35,722 248,732 232,838 20,828"  fill="url(#rock_lit)"/>
+  <polygon points="20,828 232,838 220,865 8,856"   fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="232,700 480,535 480,632 220,835" fill="url(#rock_mid)" opacity="0.78"/>
+
+  <!-- Fila 7 - zona baja -->
+  <polygon points="0,762  25,836 10,942 0,875"     fill="url(#rock_lit)"/>
+  <polygon points="8,856  220,865 210,942 0,932"   fill="url(#rock_mid)"/>
+  <polygon points="210,835 480,632 480,730 198,932" fill="url(#rock_lit)" opacity="0.72"/>
+  <polygon points="0,932  210,942 480,980 0,1080"  fill="url(#rock_shad)"/>
+
+  <!-- Grietas siguiendo la perspectiva -->
+  <g stroke="#0e0804" stroke-width="1.8" fill="none" opacity="0.7">
+    <path d="M42,5   Q56,72  40,148  Q26,222 48,298  Q32,372 54,448"/>
+    <path d="M168,102 Q182,175 165,255 Q150,332 172,412 Q156,490 178,570"/>
+    <path d="M320,125 Q338,205 318,290 Q300,372 322,458 Q306,542 328,628"/>
+    <path d="M18,328  Q34,412 18,495  Q4,578 26,662  Q10,745 32,828"/>
+    <path d="M152,340 Q168,428 152,515 Q138,600 160,688 Q144,775 166,862"/>
+    <path d="M372,452 Q390,545 370,635 Q352,722 374,810"/>
+    <path d="M68,608  Q86,698 68,788  Q52,878 74,968"/>
+    <path d="M232,718 Q250,808 232,898 Q216,988 238,1070"/>
+  </g>
+
+  <!-- Vetas minerales doradas -->
+  <g fill="none" stroke="#D4A820" stroke-width="2.5" opacity="0.45" stroke-linecap="round">
+    <path d="M18,145  Q36,153 50,145 Q64,138 78,148  Q92,158 108,150"/>
+    <path d="M130,412 Q148,420 164,412 Q180,405 194,415"/>
+    <path d="M46,718  Q64,726 80,718  Q96,710 112,720 Q128,730 144,722"/>
+    <path d="M268,268 Q288,276 305,268 Q322,260 340,270"/>
+    <path d="M348,758 Q368,766 385,758 Q402,750 420,760"/>
+    <path d="M22,552  Q40,560 56,552 Q72,545 88,555"/>
+  </g>
+
+  <!--
+  ═══════════════════ ESTRUCTURA MADERA IZQ ═══════════════════
+  Marco tipo portal de mina: montantes verticales + viga horizontal superior
+  siguiendo perspectiva del plano izquierdo
+  -->
+
+  <!-- PORTAL 1 (arriba) -->
+  <!-- Montante vertical izq -->
+  <polygon points="340,102 368,106 368,455 340,452" fill="url(#wd_v)"/>
+  <polygon points="340,102 348,106 348,455 340,452" fill="#C8922A" opacity="0.4"/>
+  <polygon points="360,102 368,106 368,455 360,452" fill="#3A2008" opacity="0.5"/>
+  <!-- Viga horizontal superior (sigue perspectiva: más baja en borde) -->
+  <polygon points="0,195 340,205 340,240 0,228"     fill="url(#wd_h)"/>
+  <polygon points="0,195 340,205 340,212 0,202"     fill="#C8922A" opacity="0.35"/>
+  <polygon points="0,225 340,237 340,240 0,228"     fill="#2A1404" opacity="0.5"/>
+  <!-- Tapa superior viga (cara superior visible) -->
+  <polygon points="0,195 340,205 340,210 0,200"     fill="url(#wd_top)" opacity="0.8"/>
+  <!-- Nodo de unión -->
+  <rect x="326" y="192" width="28" height="48" rx="3" fill="#2A1404"/>
+  <rect x="330" y="196" width="20" height="40" rx="2" fill="#5A3818"/>
+  <rect x="332" y="198" width="16" height="36" rx="1" fill="#7A5028"/>
+  <!-- Cuñas decorativas -->
+  <polygon points="330,195 358,200 358,208 330,203" fill="#8B6030"/>
+
+  <!-- PORTAL 2 (abajo) -->
+  <polygon points="355,458 383,462 383,982 355,980" fill="url(#wd_v)"/>
+  <polygon points="355,458 363,462 363,982 355,980" fill="#C8922A" opacity="0.4"/>
+  <polygon points="375,458 383,462 383,982 375,980" fill="#3A2008" opacity="0.5"/>
+  <polygon points="0,665 355,675 355,710 0,700"     fill="url(#wd_h)"/>
+  <polygon points="0,665 355,675 355,682 0,672"     fill="#C8922A" opacity="0.35"/>
+  <polygon points="0,697 355,707 355,710 0,700"     fill="#2A1404" opacity="0.5"/>
+  <polygon points="0,665 355,675 355,680 0,670"     fill="url(#wd_top)" opacity="0.8"/>
+  <rect x="341" y="662" width="28" height="48" rx="3" fill="#2A1404"/>
+  <rect x="345" y="666" width="20" height="40" rx="2" fill="#5A3818"/>
+  <rect x="347" y="668" width="16" height="36" rx="1" fill="#7A5028"/>
+
+  <!-- LÁMPARA 1 IZQ — colgante del portal superior -->
+  <!-- Cable -->
+  <line x1="252" y1="205" x2="248" y2="298" stroke="#1A0E04" stroke-width="3"/>
+  <line x1="252" y1="205" x2="248" y2="298" stroke="#3A2810" stroke-width="1.5"/>
+  <!-- Cono de luz (hacia abajo) -->
+  <polygon points="198,340 298,340 348,520 148,520" fill="url(#lamp_cone)" filter="url(#blur18)" opacity="0.85"/>
+  <!-- Halo -->
+  <ellipse cx="248" cy="325" rx="95" ry="80" fill="url(#lamp_glow)" filter="url(#blur18)" opacity="0.9"/>
+  <!-- Cuerpo lámpara -->
+  <ellipse cx="248" cy="308" rx="30" ry="18" fill="#1E1004"/>
+  <path d="M218,308 Q248,348 278,308 Z" fill="#150C02"/>
+  <ellipse cx="248" cy="300" rx="26" ry="14" fill="url(#lamp_body)"/>
+  <ellipse cx="248" cy="296" rx="14" ry="7" fill="#FFF8C0" opacity="0.95"/>
+  <ellipse cx="244" cy="293" rx="6" ry="3" fill="#fff" opacity="0.6"/>
+  <ellipse cx="248" cy="308" rx="30" ry="18" fill="none" stroke="#8A6010" stroke-width="2"/>
+  <!-- Gancho -->
+  <path d="M248,285 Q248,276 252,272 Q258,268 258,262" stroke="#3A2810" stroke-width="3" fill="none"/>
+
+  <!-- LÁMPARA 2 IZQ — portal inferior -->
+  <line x1="255" y1="675" x2="252" y2="765" stroke="#1A0E04" stroke-width="3"/>
+  <polygon points="202,808 302,808 348,988 156,988" fill="url(#lamp_cone)" filter="url(#blur18)" opacity="0.8"/>
+  <ellipse cx="252" cy="792" rx="90" ry="75" fill="url(#lamp_glow)" filter="url(#blur18)" opacity="0.88"/>
+  <ellipse cx="252" cy="775" rx="28" ry="17" fill="#1E1004"/>
+  <path d="M224,775 Q252,812 280,775 Z" fill="#150C02"/>
+  <ellipse cx="252" cy="768" rx="24" ry="13" fill="url(#lamp_body)"/>
+  <ellipse cx="252" cy="764" rx="13" ry="6" fill="#FFF8C0" opacity="0.95"/>
+  <ellipse cx="248" cy="761" rx="5" ry="2.5" fill="#fff" opacity="0.6"/>
+  <ellipse cx="252" cy="775" rx="28" ry="17" fill="none" stroke="#8A6010" stroke-width="2"/>
+  <path d="M252,754 Q252,745 256,741 Q262,737 262,731" stroke="#3A2810" stroke-width="3" fill="none"/>
+
+  <!-- Fade suave al borde de apertura -->
+  <polygon points="410,100 480,100 480,980 410,980" fill="url(#fadeL)"/>
+
+  <!--
+  ═══════════════════════════════════════════
+  PARED DERECHA — espejo de la izquierda
+  Frente: x=1920, y=0..1080
+  Apertura: x=1440, y=100..980
+  ═══════════════════════════════════════════
+  -->
+
+  <polygon points="1920,0 1440,100 1440,980 1920,1080" fill="url(#wR)"/>
+
+  <!-- Bloques der -->
+  <polygon points="1920,0   1725,100 1742,168 1920,55"    fill="url(#rock_lit)"/>
+  <polygon points="1920,55  1742,168 1755,198 1920,82"    fill="url(#rock_shad)" opacity="0.7"/>
+  <polygon points="1742,102 1530,118 1545,185 1758,170"   fill="url(#rock_mid)"/>
+  <polygon points="1758,170 1545,185 1558,210 1772,196"   fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="1545,118 1440,100 1440,155 1558,188"   fill="url(#rock_lit)" opacity="0.8"/>
+
+  <polygon points="1920,82  1755,195 1772,290 1920,185"   fill="url(#rock_mid)"/>
+  <polygon points="1920,185 1772,290 1784,320 1920,215"   fill="url(#rock_shad)" opacity="0.65"/>
+  <polygon points="1772,196 1558,210 1575,310 1788,298"   fill="url(#rock_lit)"/>
+  <polygon points="1788,298 1575,310 1588,338 1802,326"   fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="1575,210 1440,155 1440,248 1588,315"   fill="url(#rock_mid)" opacity="0.85"/>
+
+  <polygon points="1920,215 1784,318 1800,415 1920,320"   fill="url(#rock_lit)"/>
+  <polygon points="1920,320 1800,415 1812,445 1920,350"   fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="1802,326 1588,338 1604,440 1816,432"   fill="url(#rock_mid)"/>
+  <polygon points="1816,432 1604,440 1616,468 1830,460"   fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="1604,315 1440,248 1440,342 1616,435"   fill="url(#rock_lit)" opacity="0.8"/>
+
+  <polygon points="1920,350 1812,443 1828,545 1920,455"   fill="url(#rock_mid)"/>
+  <polygon points="1920,455 1828,545 1840,575 1920,488"   fill="url(#rock_shad)" opacity="0.65"/>
+  <polygon points="1830,460 1616,468 1632,572 1844,562"   fill="url(#rock_lit)"/>
+  <polygon points="1844,562 1632,572 1644,600 1858,590"   fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="1632,435 1440,342 1440,438 1644,568"   fill="url(#rock_mid)" opacity="0.8"/>
+
+  <polygon points="1920,488 1840,572 1855,675 1920,592"   fill="url(#rock_lit)"/>
+  <polygon points="1920,592 1855,675 1868,705 1920,625"   fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="1858,590 1644,600 1660,705 1872,695"   fill="url(#rock_mid)"/>
+  <polygon points="1872,695 1660,705 1672,732 1885,722"   fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="1660,568 1440,438 1440,535 1672,700"   fill="url(#rock_lit)" opacity="0.75"/>
+
+  <polygon points="1920,625 1868,703 1882,808 1920,730"   fill="url(#rock_mid)"/>
+  <polygon points="1920,730 1882,808 1895,838 1920,762"   fill="url(#rock_shad)" opacity="0.65"/>
+  <polygon points="1885,722 1672,732 1688,838 1900,828"   fill="url(#rock_lit)"/>
+  <polygon points="1900,828 1688,838 1700,865 1912,856"   fill="url(#rock_shad)" opacity="0.6"/>
+  <polygon points="1688,700 1440,535 1440,632 1700,835"   fill="url(#rock_mid)" opacity="0.78"/>
+
+  <polygon points="1920,762 1895,836 1910,942 1920,875"   fill="url(#rock_lit)"/>
+  <polygon points="1912,856 1700,865 1710,942 1920,932"   fill="url(#rock_mid)"/>
+  <polygon points="1710,835 1440,632 1440,730 1722,932"   fill="url(#rock_lit)" opacity="0.72"/>
+  <polygon points="1920,932 1710,942 1440,980 1920,1080"  fill="url(#rock_shad)"/>
+
+  <!-- Grietas der -->
+  <g stroke="#0e0804" stroke-width="1.8" fill="none" opacity="0.7">
+    <path d="M1878,5   Q1864,72  1880,148 Q1894,222 1872,298 Q1888,372 1866,448"/>
+    <path d="M1752,102 Q1738,175 1755,255 Q1770,332 1748,412 Q1764,490 1742,570"/>
+    <path d="M1600,125 Q1582,205 1602,290 Q1620,372 1598,458 Q1614,542 1592,628"/>
+    <path d="M1902,328 Q1886,412 1902,495 Q1916,578 1894,662 Q1910,745 1888,828"/>
+    <path d="M1768,340 Q1752,428 1768,515 Q1782,600 1760,688 Q1776,775 1754,862"/>
+    <path d="M1548,452 Q1530,545 1550,635 Q1568,722 1546,810"/>
+    <path d="M1852,608 Q1834,698 1852,788 Q1868,878 1846,968"/>
+    <path d="M1688,718 Q1670,808 1688,898 Q1704,988 1682,1070"/>
+  </g>
+
+  <!-- Vetas der -->
+  <g fill="none" stroke="#D4A820" stroke-width="2.5" opacity="0.45" stroke-linecap="round">
+    <path d="M1902,145 Q1884,153 1870,145 Q1856,138 1842,148 Q1828,158 1812,150"/>
+    <path d="M1790,412 Q1772,420 1756,412 Q1740,405 1726,415"/>
+    <path d="M1874,718 Q1856,726 1840,718 Q1824,710 1808,720 Q1792,730 1776,722"/>
+    <path d="M1652,268 Q1632,276 1615,268 Q1598,260 1580,270"/>
+    <path d="M1572,758 Q1552,766 1535,758 Q1518,750 1500,760"/>
+    <path d="M1898,552 Q1880,560 1864,552 Q1848,545 1832,555"/>
+  </g>
+
+  <!-- MADERA DER - Portal 1 -->
+  <polygon points="1580,102 1552,106 1552,455 1580,452" fill="url(#wd_v)"/>
+  <polygon points="1572,102 1580,106 1580,455 1572,452" fill="#C8922A" opacity="0.4"/>
+  <polygon points="1552,102 1560,106 1560,455 1552,452" fill="#3A2008" opacity="0.5"/>
+  <polygon points="1920,195 1580,205 1580,240 1920,228"  fill="url(#wd_h)"/>
+  <polygon points="1920,195 1580,205 1580,212 1920,202"  fill="#C8922A" opacity="0.35"/>
+  <polygon points="1920,225 1580,237 1580,240 1920,228"  fill="#2A1404" opacity="0.5"/>
+  <polygon points="1920,195 1580,205 1580,210 1920,200"  fill="url(#wd_top)" opacity="0.8"/>
+  <rect x="1566" y="192" width="28" height="48" rx="3" fill="#2A1404"/>
+  <rect x="1570" y="196" width="20" height="40" rx="2" fill="#5A3818"/>
+  <rect x="1572" y="198" width="16" height="36" rx="1" fill="#7A5028"/>
+  <polygon points="1562,195 1590,200 1590,208 1562,203" fill="#8B6030"/>
+
+  <!-- MADERA DER - Portal 2 -->
+  <polygon points="1565,458 1537,462 1537,982 1565,980" fill="url(#wd_v)"/>
+  <polygon points="1557,458 1565,462 1565,982 1557,980" fill="#C8922A" opacity="0.4"/>
+  <polygon points="1537,458 1545,462 1545,982 1537,980" fill="#3A2008" opacity="0.5"/>
+  <polygon points="1920,665 1565,675 1565,710 1920,700"  fill="url(#wd_h)"/>
+  <polygon points="1920,665 1565,675 1565,682 1920,672"  fill="#C8922A" opacity="0.35"/>
+  <polygon points="1920,697 1565,707 1565,710 1920,700"  fill="#2A1404" opacity="0.5"/>
+  <polygon points="1920,665 1565,675 1565,680 1920,670"  fill="url(#wd_top)" opacity="0.8"/>
+  <rect x="1551" y="662" width="28" height="48" rx="3" fill="#2A1404"/>
+  <rect x="1555" y="666" width="20" height="40" rx="2" fill="#5A3818"/>
+  <rect x="1557" y="668" width="16" height="36" rx="1" fill="#7A5028"/>
+
+  <!-- LÁMPARA 1 DER -->
+  <line x1="1672" y1="205" x2="1675" y2="298" stroke="#1A0E04" stroke-width="3"/>
+  <polygon points="1622,340 1722,340 1772,520 1572,520" fill="url(#lamp_cone)" filter="url(#blur18)" opacity="0.85"/>
+  <ellipse cx="1672" cy="325" rx="95" ry="80" fill="url(#lamp_glow)" filter="url(#blur18)" opacity="0.9"/>
+  <ellipse cx="1672" cy="308" rx="30" ry="18" fill="#1E1004"/>
+  <path d="M1642,308 Q1672,348 1702,308 Z" fill="#150C02"/>
+  <ellipse cx="1672" cy="300" rx="26" ry="14" fill="url(#lamp_body)"/>
+  <ellipse cx="1672" cy="296" rx="14" ry="7" fill="#FFF8C0" opacity="0.95"/>
+  <ellipse cx="1676" cy="293" rx="6" ry="3" fill="#fff" opacity="0.6"/>
+  <ellipse cx="1672" cy="308" rx="30" ry="18" fill="none" stroke="#8A6010" stroke-width="2"/>
+  <path d="M1672,285 Q1672,276 1668,272 Q1662,268 1662,262" stroke="#3A2810" stroke-width="3" fill="none"/>
+
+  <!-- LÁMPARA 2 DER -->
+  <line x1="1665" y1="675" x2="1668" y2="765" stroke="#1A0E04" stroke-width="3"/>
+  <polygon points="1618,808 1718,808 1764,988 1572,988" fill="url(#lamp_cone)" filter="url(#blur18)" opacity="0.8"/>
+  <ellipse cx="1668" cy="792" rx="90" ry="75" fill="url(#lamp_glow)" filter="url(#blur18)" opacity="0.88"/>
+  <ellipse cx="1668" cy="775" rx="28" ry="17" fill="#1E1004"/>
+  <path d="M1640,775 Q1668,812 1696,775 Z" fill="#150C02"/>
+  <ellipse cx="1668" cy="768" rx="24" ry="13" fill="url(#lamp_body)"/>
+  <ellipse cx="1668" cy="764" rx="13" ry="6" fill="#FFF8C0" opacity="0.95"/>
+  <ellipse cx="1672" cy="761" rx="5" ry="2.5" fill="#fff" opacity="0.6"/>
+  <ellipse cx="1668" cy="775" rx="28" ry="17" fill="none" stroke="#8A6010" stroke-width="2"/>
+  <path d="M1668,754 Q1668,745 1664,741 Q1658,737 1658,731" stroke="#3A2810" stroke-width="3" fill="none"/>
+
+  <!-- Fade der -->
+  <polygon points="1440,100 1510,100 1510,980 1440,980" fill="url(#fadeR)"/>
+
+  <!-- ═══ TECHO en perspectiva ═══ -->
+  <polygon points="0,0 1920,0 1440,100 480,100" fill="url(#ceil)"/>
+  <!-- Viga maestra techo -->
+  <polygon points="480,100 1440,100 1440,118 480,118" fill="url(#wd_h)" opacity="0.85"/>
+  <polygon points="480,100 1440,100 1440,106 480,106" fill="#C8922A" opacity="0.4"/>
+  <!-- Sombra techo -->
+  <rect x="0" y="0" width="1920" height="128" fill="url(#shadT)"/>
+
+  <!-- ═══ PISO en perspectiva ═══ -->
+  <polygon points="0,1080 1920,1080 1440,980 480,980" fill="url(#floor)"/>
+  <!-- Raíles en perspectiva convergente -->
+  <g fill="none">
+    <line x1="720" y1="980" x2="580" y2="1080" stroke="#5A3C18" stroke-width="8"/>
+    <line x1="1200" y1="980" x2="1340" y2="1080" stroke="#5A3C18" stroke-width="8"/>
+    <line x1="720" y1="980" x2="1200" y2="980" stroke="#4A2C10" stroke-width="5"/>
+    <line x1="692" y1="997" x2="1228" y2="997" stroke="#3A2008" stroke-width="4"/>
+    <line x1="660" y1="1016" x2="1260" y2="1016" stroke="#3A2008" stroke-width="4"/>
+    <line x1="625" y1="1038" x2="1295" y2="1038" stroke="#3A2008" stroke-width="3"/>
+    <line x1="590" y1="1060" x2="1330" y2="1060" stroke="#2A1808" stroke-width="3"/>
+  </g>
+  <!-- Sombra piso -->
+  <rect x="0" y="960" width="1920" height="120" fill="url(#shadB)"/>
+
+  <!-- ═══ NIEBLA PROFUNDIDAD ═══ -->
+  <rect x="480" y="100" width="960" height="880" fill="url(#fog)"/>
+
+</svg>

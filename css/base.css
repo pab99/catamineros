@@ -1,0 +1,59 @@
+:root{
+  --bg:#000;
+  --gold:#FFD700;
+  --gold-dark:#c9a800;
+  --text:#F5F0E8;
+  --muted:#7a6a50;
+  --font-display:'Black Ops One',serif;
+  --font-body:'Oswald',sans-serif;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  color:var(--text);
+  font-family:var(--font-body),sans-serif;
+}
+
+.screen{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .4s ease;
+}
+
+.screen.active{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.center-block{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Corchetes de esquina estilo fotomatón */
+.corner{
+  position:absolute;
+  width:60px;
+  height:60px;
+  border-color:var(--gold);
+  border-style:solid;
+}
+.corner.tl{ top:20px; left:20px; border-width:5px 0 0 5px; }
+.corner.tr{ top:20px; right:20px; border-width:5px 5px 0 0; }
+.corner.bl{ bottom:20px; left:20px; border-width:0 0 5px 5px; }
+.corner.br{ bottom:20px; right:20px; border-width:0 5px 5px 0; }

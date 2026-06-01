@@ -1,0 +1,69 @@
+#screen-register{
+  background:radial-gradient(ellipse at center,#1a1200 0%,#000 70%);
+}
+
+.register-box{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  width:min(480px,90vw);
+  text-align:center;
+}
+
+.register-label{
+  font-family:var(--font-display);
+  font-size:2.5vw;
+  color:var(--gold);
+  letter-spacing:4px;
+  margin-bottom:8px;
+}
+
+.register-box input{
+  padding:18px 20px;
+  font-size:24px;
+  font-family:var(--font-body);
+  font-weight:700;
+  background:#111;
+  border:3px solid var(--gold);
+  color:var(--gold);
+  outline:none;
+  text-align:center;
+  letter-spacing:2px;
+}
+
+.register-box input::placeholder{
+  color:var(--muted);
+}
+
+.register-box button{
+  padding:18px;
+  font-family:var(--font-display);
+  font-size:20px;
+  letter-spacing:3px;
+  cursor:pointer;
+  border:none;
+  transition:transform .1s, box-shadow .1s;
+}
+
+#save-btn{
+  background:var(--gold);
+  color:#000;
+}
+
+#save-btn:hover{
+  transform:scale(1.02);
+  box-shadow:0 0 20px rgba(255,215,0,0.5);
+}
+
+#skip-btn{
+  background:transparent;
+  border:2px solid var(--muted);
+  color:var(--muted);
+  font-size:14px;
+  padding:12px;
+  letter-spacing:4px;
+}
