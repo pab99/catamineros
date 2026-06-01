@@ -5,39 +5,39 @@ const url  = require('url');
 
 const { createClient } = require('@supabase/supabase-js');
 
-const PORT    = 8080;
-const PHOTOS  = path.join(__dirname, 'fotos');
+const PORT = process.env.PORT || 8080;
 
-if(!fs.existsSync(PHOTOS)){
+const PHOTOS = path.join(__dirname, 'fotos');
+
+if (!fs.existsSync(PHOTOS)) {
   fs.mkdirSync(PHOTOS);
 }
 
 const supabase = createClient(
   'https://tczmjvcqgscpeyivpbyd.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjem1qdmNxZ3NjcGV5aXZwYnlkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM0MzMxMCwiZXhwIjoyMDk1OTE5MzEwfQ.JkfuUD6RCNM2BVg6t2jgfK5dJxTGLeMarBn2UXzA_aw'
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 const MIME = {
-  '.html':'text/html',
-  '.css':'text/css',
-  '.js':'application/javascript',
-  '.json':'application/json',
-  '.png':'image/png',
-  '.jpg':'image/jpeg',
-  '.jpeg':'image/jpeg',
-  '.svg':'image/svg+xml',
-  '.ico':'image/x-icon',
-  '.woff2':'font/woff2',
-  '.woff':'font/woff',
-  '.ttf':'font/ttf'
+  '.html': 'text/html',
+  '.css': 'text/css',
+  '.js': 'application/javascript',
+  '.json': 'application/json',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.woff2': 'font/woff2',
+  '.woff': 'font/woff',
+  '.ttf': 'font/ttf'
 };
 
-async function uploadToSupabase(buffer, filename){
+async function uploadToSupabase(buffer, filename) {
 
-  try{
+  try {
 
-    const remotePath =
-      'public/' + filename;
+    const remotePath = 'public/' + filename;
 
     const { error } =
       await supabase.storage
@@ -46,12 +46,12 @@ async function uploadToSupabase(buffer, filename){
           remotePath,
           buffer,
           {
-            contentType:'image/jpeg',
-            upsert:true
+            contentType: 'image/jpeg',
+            upsert: true
           }
         );
 
-    if(error){
+    if (error) {
 
       console.error(
         'Supabase upload error:',
@@ -73,7 +73,7 @@ async function uploadToSupabase(buffer, filename){
 
     return data.publicUrl;
 
-  }catch(err){
+  } catch (err) {
 
     console.error(
       'Supabase exception:',
@@ -84,48 +84,63 @@ async function uploadToSupabase(buffer, filename){
   }
 }
 
-http.createServer(function(req, res){
+const server = http.createServer(function (req, res) {
 
-  res.setHeader('Access-Control-Allow-Origin','*');
-  res.setHeader('Access-Control-Allow-Methods','GET,POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers','Content-Type');
+  res.setHeader(
+    'Access-Control-Allow-Origin',
+    '*'
+  );
 
-  if(req.method==='OPTIONS'){
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET,POST,OPTIONS'
+  );
+
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type'
+  );
+
+  if (req.method === 'OPTIONS') {
+
     res.writeHead(204);
     res.end();
     return;
   }
 
-  if(req.method==='POST' && req.url==='/save-photo'){
+  if (
+    req.method === 'POST' &&
+    req.url === '/save-photo'
+  ) {
 
-    var body='';
+    let body = '';
 
-    req.on('data',function(chunk){
+    req.on('data', function (chunk) {
       body += chunk;
     });
 
-    req.on('end',function(){
+    req.on('end', function () {
 
-      try{
+      try {
 
-        var obj = JSON.parse(body);
+        const obj = JSON.parse(body);
 
-        var b64 =
+        const b64 =
           obj.dataUrl.replace(
             /^data:image\/\w+;base64,/,
             ''
           );
 
-        var buf =
+        const buf =
           Buffer.from(
             b64,
             'base64'
           );
 
-        var fname =
+        const fname =
           (
             obj.filename ||
-            ('foto_'+Date.now()+'.jpg')
+            ('foto_' + Date.now() + '.jpg')
           )
           .replace(
             /[^a-zA-Z0-9._-]/g,
@@ -135,12 +150,20 @@ http.createServer(function(req, res){
         fs.writeFile(
           path.join(PHOTOS, fname),
           buf,
-          function(err){
+          function (err) {
 
-            if(err){
+            if (err) {
+
+              console.error(err);
 
               res.writeHead(500);
-              res.end('error');
+
+              res.end(
+                JSON.stringify({
+                  ok: false,
+                  error: 'write error'
+                })
+              );
 
               return;
             }
@@ -150,56 +173,54 @@ http.createServer(function(req, res){
               fname
             );
 
-            /*
-             * RESPONDER INMEDIATAMENTE
-             */
             res.writeHead(
               200,
               {
                 'Content-Type':
-                'application/json'
+                  'application/json'
               }
             );
 
             res.end(
               JSON.stringify({
-                ok:true,
-                file:'fotos/'+fname
+                ok: true,
+                file: 'fotos/' + fname
               })
             );
 
-            /*
-             * SUBIDA A SUPABASE
-             * EN SEGUNDO PLANO
-             */
             uploadToSupabase(
               buf,
               fname
             );
-
           }
         );
 
-      }catch(e){
+      } catch (e) {
 
         console.error(e);
 
         res.writeHead(400);
-        res.end('bad request');
+
+        res.end(
+          JSON.stringify({
+            ok: false,
+            error: 'bad request'
+          })
+        );
       }
     });
 
     return;
   }
 
-  var parsed =
+  let parsed =
     url.parse(req.url).pathname;
 
-  if(parsed==='/'){
-    parsed='/index.html';
+  if (parsed === '/') {
+    parsed = '/index.html';
   }
 
-  var filepath =
+  const filepath =
     path.join(
       __dirname,
       parsed
@@ -207,28 +228,29 @@ http.createServer(function(req, res){
 
   fs.readFile(
     filepath,
-    function(err, data){
+    function (err, data) {
 
-      if(err){
+      if (err) {
 
         res.writeHead(404);
+
         res.end('Not found');
 
         return;
       }
 
-      var ext =
+      const ext =
         path.extname(filepath)
           .toLowerCase();
 
-      var mime =
+      const mime =
         MIME[ext] ||
         'application/octet-stream';
 
       res.writeHead(
         200,
         {
-          'Content-Type':mime
+          'Content-Type': mime
         }
       );
 
@@ -236,14 +258,16 @@ http.createServer(function(req, res){
     }
   );
 
-}).listen(PORT, function(){
+});
+
+server.listen(PORT, function () {
 
   console.log('');
   console.log(
     '⛏️ CataMiner@s servidor listo'
   );
   console.log(
-    '→ http://localhost:' + PORT
+    '→ Puerto: ' + PORT
   );
   console.log(
     '→ Fotos locales: /fotos'
@@ -256,13 +280,15 @@ http.createServer(function(req, res){
 
 process.on(
   'uncaughtException',
-  function(err){
+  function (err) {
 
-    if(err.code==='EADDRINUSE'){
+    if (
+      err.code === 'EADDRINUSE'
+    ) {
 
       console.error('');
       console.error(
-        'ERROR: puerto 8080 ocupado'
+        'ERROR: puerto ocupado'
       );
       console.error('');
 
