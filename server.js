@@ -14,7 +14,7 @@ if(!fs.existsSync(PHOTOS)){
 
 const supabase = createClient(
   'https://tczmjvcqgscpeyivpbyd.supabase.co',
-  'TU_ANON_KEY_COMPLETA'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjem1qdmNxZ3NjcGV5aXZwYnlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzNDMzMTAsImV4cCI6MjA5NTkxOTMxMH0.L0nsxcqFzk4F8FZyVy7ogPmet7bQePDHn-bbTdSaZ0k'
 );
 
 const MIME = {
