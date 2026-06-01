@@ -886,7 +886,13 @@ function silentDownload(dataUrl, filename){
     body: JSON.stringify({dataUrl: dataUrl, filename: filename})
   })
   .then(function(r){ return r.json(); })
-  .then(function(j){ console.log('Foto guardada en servidor:', j.file); })
+  .then(function(j){
+    console.log('Foto guardada:', j.file);
+    if(j.publicUrl){
+      photoUrl = j.publicUrl;
+      buildGallery();
+    }
+  })
   .catch(function(e){
     // Fallback: descarga clásica si el servidor no responde
     console.warn('POST /save-photo falló, usando descarga directa:', e);
