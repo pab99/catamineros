@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<title>LED - CataMiner@s</title>
+<title>LED CataMiner@s</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
@@ -19,7 +19,6 @@ body {
   gap:10px;
   padding:20px;
   justify-content:center;
-  align-items:center;
 }
 
 img {
@@ -27,21 +26,6 @@ img {
   height:170px;
   object-fit:cover;
   border:2px solid gold;
-  box-shadow:0 0 10px rgba(255,215,0,0.3);
-  transition:transform 0.4s;
-}
-
-img.active {
-  transform:scale(1.15);
-}
-
-#qr {
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:white;
-  padding:10px;
-  border-radius:12px;
 }
 </style>
 </head>
@@ -50,37 +34,29 @@ img.active {
 
 <div id="grid"></div>
 
-<div id="qr">
-  <img src="/assets/qr.png" width="140" />
-</div>
-
 <script>
 
-const supabase = window.supabase.createClient(
+const supabaseClient = supabase.createClient(
   "https://tczmjvcqgscpeyivpbyd.supabase.co",
-  "TU_ANON_KEY_AQUI"
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjem1qdmNxZ3NjcGV5aXZwYnlkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM0MzMxMCwiZXhwIjoyMDk1OTE5MzEwfQ.JkfuUD6RCNM2BVg6t2jgfK5dJxTGLeMarBn2UXzA_aw"
 );
 
-let photos = [];
+async function load() {
 
-async function loadPhotos() {
-
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("fotos_mineros")
     .select("public_url")
     .order("id", { ascending: false });
 
   if (error) {
-    console.log("ERROR SUPA:", error);
+    console.log(error);
     return;
   }
-
-  photos = data || [];
 
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  photos.forEach(p => {
+  (data || []).forEach(p => {
     if (!p.public_url) return;
 
     const img = document.createElement("img");
@@ -89,23 +65,8 @@ async function loadPhotos() {
   });
 }
 
-// animación tipo LED
-function animate() {
-  let i = 0;
-
-  setInterval(() => {
-    const imgs = document.querySelectorAll("img");
-    imgs.forEach(img => img.classList.remove("active"));
-
-    if (imgs[i]) imgs[i].classList.add("active");
-
-    i = (i + 1) % imgs.length;
-  }, 1200);
-}
-
-loadPhotos();
-setInterval(loadPhotos, 5000);
-setTimeout(animate, 1500);
+load();
+setInterval(load, 5000);
 
 </script>
 
