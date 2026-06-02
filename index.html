@@ -135,8 +135,15 @@
     }
 
     /* ── OVERLAY ── */
-    #overlay{ position:fixed; inset:0; pointer-events:none; z-index:100; display:none; }
-    #helmet-layer{ position:fixed; inset:0; pointer-events:none; z-index:101; display:none; }
+    #overlay, #helmet-layer{
+      position:fixed;
+      width:100%; height:auto; aspect-ratio:16/9;
+      max-height:100%; max-width:calc(100vh * 16 / 9);
+      top:50%; left:50%; transform:translate(-50%,-50%);
+      pointer-events:none;
+    }
+    #overlay{ z-index:100; display:none; }
+    #helmet-layer{ z-index:101; display:none; }
 
     /* ── COUNTDOWN LATERAL ── */
     #countdown-left, #countdown-right{
@@ -500,7 +507,11 @@ function startSlideLoop(){ stopSlideLoop(); slideTimer = setInterval(nextSlide, 
 function stopSlideLoop(){ if(slideTimer){ clearInterval(slideTimer); slideTimer=null; } }
 
 // ── OVERLAY ──
-function resizeCvs(){ cvs.width=window.innerWidth; cvs.height=window.innerHeight; hcvs.width=window.innerWidth; hcvs.height=window.innerHeight; }
+function resizeCvs(){
+  var r=cvs.getBoundingClientRect();
+  cvs.width=Math.round(r.width); cvs.height=Math.round(r.height);
+  hcvs.width=Math.round(r.width); hcvs.height=Math.round(r.height);
+}
 function showOverlay(){ cvs.style.display='block'; hcvs.style.display='block'; }
 function hideOverlay(){ cvs.style.display='none'; hcvs.style.display='none'; }
 
