@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <title>Mi Foto Minera</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
 <style>
 body {
   background:black;
@@ -15,11 +17,11 @@ body {
 input {
   padding:12px;
   font-size:18px;
-  width:250px;
+  width:260px;
 }
 
 button {
-  padding:12px 20px;
+  padding:12px 18px;
   margin-left:10px;
   cursor:pointer;
 }
@@ -44,39 +46,48 @@ img {
 <div id="res"></div>
 
 <script>
-const SUPABASE_URL = "https://tczmjvcqgscpeyivpbyd.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjem1qdmNxZ3NjcGV5aXZwYnlkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM0MzMxMCwiZXhwIjoyMDk1OTE5MzEwfQ.JkfuUD6RCNM2BVg6t2jgfK5dJxTGLeMarBn2UXzA_aw";
-  
 
-  
+const supabase = window.supabase.createClient(
+  "https://tczmjvcqgscpeyivpbyd.supabase.co",
+  "TU_ANON_KEY_AQUI"
+);
+
+function normalizarIg(v) {
+  return (v || "")
+    .replace("@","")
+    .trim()
+    .toLowerCase();
+}
+
 async function buscar() {
-  let ig = document.getElementById("ig").value.trim();
-  ig = ig.replace("@","");
 
-  const res = await fetch(
-    SUPABASE_URL + "/rest/v1/fotos_mineros?select=public_url,usuario_ig&usuario_ig=eq." + ig,
-    {
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: "Bearer " + SUPABASE_KEY
-      }
-    }
-  );
+  const ig = normalizarIg(document.getElementById("ig").value);
 
-  const data = await res.json();
+  const { data, error } = await supabase
+    .from("fotos_mineros")
+    .select("public_url, usuario_ig")
+    .eq("usuario_ig", ig)
+    .order("id", { ascending: false });
 
-  const div = document.getElementById("res");
-  div.innerHTML = "";
+  const res = document.getElementById("res");
+  res.innerHTML = "";
 
-  if (!data.length) {
-    div.innerHTML = "<p>No se encontró foto</p>";
+  if (error) {
+    res.innerHTML = "Error consultando datos";
+    console.log(error);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    res.innerHTML = "<p>No se encontró tu foto</p>";
     return;
   }
 
   const img = document.createElement("img");
   img.src = data[0].public_url;
-  div.appendChild(img);
+  res.appendChild(img);
 }
+
 </script>
 
 </body>
