@@ -130,7 +130,7 @@ const server = http.createServer((req, res) => {
       try {
         const obj = JSON.parse(body);
 
-        const ig = (obj.usuario || '').trim();
+        const ig = (obj.ig || obj.usuario || '').trim();
         const safeIg = ig.length ? ig : 'sin_usuario';
 
         if (!obj.dataUrl) {
