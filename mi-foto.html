@@ -2,28 +2,87 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Mi Foto Minera</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
 <style>
+* { box-sizing: border-box; }
 body {
-  background:black;
-  color:white;
-  text-align:center;
-  font-family:sans-serif;
+  background: black;
+  color: white;
+  text-align: center;
+  font-family: sans-serif;
+  padding: 20px;
+  min-height: 100vh;
 }
 
-input, button {
-  padding:12px;
-  font-size:18px;
+h1 {
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+  color: gold;
 }
 
-img {
-  margin-top:20px;
-  max-width:90vw;
-  border:3px solid gold;
+.search-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
+
+input {
+  padding: 12px 16px;
+  font-size: 18px;
+  border: 2px solid gold;
+  border-radius: 8px;
+  background: #111;
+  color: white;
+  width: 220px;
+  outline: none;
+}
+
+button {
+  padding: 12px 20px;
+  font-size: 18px;
+  background: gold;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:active { opacity: 0.8; }
+
+#res {
+  margin-top: 16px;
+}
+
+#res img {
+  max-width: 90vw;
+  max-height: 60vh;
+  border: 3px solid gold;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto 12px;
+}
+
+.msg {
+  color: #aaa;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.spinner {
+  margin: 20px auto;
+  width: 36px;
+  height: 36px;
+  border: 4px solid #333;
+  border-top-color: gold;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 
@@ -31,55 +90,60 @@ img {
 
 <h1>⛏️ TU FOTO MINERA</h1>
 
-<input id="ig" placeholder="@usuario" />
-<button onclick="buscar()">Buscar</button>
+<div class="search-row">
+  <input id="ig" placeholder="@usuario" type="text" autocomplete="off" autocapitalize="none" />
+  <button onclick="buscar()">Buscar</button>
+</div>
 
 <div id="res"></div>
 
 <script>
+const res = document.getElementById('res');
 
-const supabaseClient = supabase.createClient(
-  "https://tczmjvcqgscpeyivpbyd.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjem1qdmNxZ3NjcGV5aXZwYnlkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM0MzMxMCwiZXhwIjoyMDk1OTE5MzEwfQ.JkfuUD6RCNM2BVg6t2jgfK5dJxTGLeMarBn2UXzA_aw"
-);
+// Enter también busca
+document.getElementById('ig').addEventListener('keydown', e => {
+  if (e.key === 'Enter') buscar();
+});
 
-function normalizar(v) {
-  return (v || "")
-    .replace("@","")
-    .trim()
-    .toLowerCase();
+async function buscar() {
+  const raw = document.getElementById('ig').value;
+  const ig = raw.replace('@', '').trim().toLowerCase();
+
+  if (!ig) {
+    res.innerHTML = '<p class="msg">Ingresá tu usuario de Instagram</p>';
+    return;
+  }
+
+  res.innerHTML = '<div class="spinner"></div>';
+
+  try {
+    const r = await fetch('/api/buscar?ig=' + encodeURIComponent(ig));
+    const json = await r.json();
+
+    res.innerHTML = '';
+
+    if (!json.ok) {
+      res.innerHTML = '<p class="msg">Error del servidor</p>';
+      return;
+    }
+
+    if (!json.fotos || json.fotos.length === 0) {
+      res.innerHTML = '<p class="msg">No se encontró foto para @' + ig + '</p>';
+      return;
+    }
+
+    json.fotos.forEach(f => {
+      const img = document.createElement('img');
+      img.src = f.public_url;
+      img.alt = 'Foto de @' + ig;
+      res.appendChild(img);
+    });
+
+  } catch (e) {
+    res.innerHTML = '<p class="msg">Error de conexión</p>';
+    console.error(e);
+  }
 }
-
-// 👇 IMPORTANTE: función GLOBAL (window-safe)
-window.buscar = async function () {
-
-  const ig = normalizar(document.getElementById("ig").value);
-
-  const { data, error } = await supabaseClient
-    .from("fotos_mineros")
-    .select("public_url, usuario_ig")
-    .eq("usuario_ig", ig)
-    .order("id", { ascending: false });
-
-  const res = document.getElementById("res");
-  res.innerHTML = "";
-
-  if (error) {
-    console.log(error);
-    res.innerHTML = "Error Supabase";
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    res.innerHTML = "No se encontró foto";
-    return;
-  }
-
-  const img = document.createElement("img");
-  img.src = data[0].public_url;
-  res.appendChild(img);
-};
-
 </script>
 
 </body>

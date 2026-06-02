@@ -76,10 +76,10 @@ async function uploadToSupabase(buffer, filename, usuarioIg) {
       .from('fotos')
       .getPublicUrl(remotePath);
 
-    console.log('☁️ Supabase OK:', data.publicUrl);
+    console.log('☁️ Supabase storage OK:', data.publicUrl);
 
-    // 👉 INSERT EN DB (ACA ESTA LO IMPORTANTE)
-    await supabase.from('fotos_mineros').insert([
+    // INSERT EN DB
+    const { error: dbError } = await supabase.from('fotos_mineros').insert([
       {
         usuario_ig: usuarioIg,
         filename: filename,
@@ -89,6 +89,12 @@ async function uploadToSupabase(buffer, filename, usuarioIg) {
         evento: 'cataminers_2026'
       }
     ]);
+
+    if (dbError) {
+      console.error('DB insert error:', dbError.message);
+    } else {
+      console.log('📋 DB OK:', usuarioIg, filename);
+    }
 
     return data.publicUrl;
 
@@ -118,11 +124,9 @@ const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/save-photo') {
 
     let body = '';
-
     req.on('data', chunk => body += chunk);
 
     req.on('end', async () => {
-
       try {
         const obj = JSON.parse(body);
 
@@ -135,29 +139,25 @@ const server = http.createServer((req, res) => {
         }
 
         const filename = generarNombreInstagram(safeIg);
-
         const base64 = obj.dataUrl.replace(/^data:image\/\w+;base64,/, '');
         const buffer = Buffer.from(base64, 'base64');
-
         const localPath = path.join(PHOTOS, filename);
 
-        fs.writeFile(localPath, async (err) => {
-
+        // ✅ FIX: se pasaba buffer faltante en fs.writeFile
+        fs.writeFile(localPath, buffer, async (err) => {
           if (err) {
+            console.error('writeFile error:', err);
             res.writeHead(500);
             return res.end(JSON.stringify({ ok: false }));
           }
 
-          console.log('📸 Guardada:', filename);
+          console.log('📸 Guardada local:', filename);
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({
-            ok: true,
-            file: `fotos/${filename}`
-          }));
+          res.end(JSON.stringify({ ok: true, file: `fotos/${filename}` }));
 
           // subir a supabase (background)
-          await uploadToSupabase(buffer, filename, safeIg);
+          uploadToSupabase(buffer, filename, safeIg);
         });
 
       } catch (e) {
@@ -171,7 +171,63 @@ const server = http.createServer((req, res) => {
   }
 
   // =========================
-  // STATIC
+  // API: GALERÍA (para led.html)
+  // =========================
+  if (req.method === 'GET' && req.url === '/api/fotos') {
+    (async () => {
+      const { data, error } = await supabase
+        .from('fotos_mineros')
+        .select('public_url, usuario_ig, filename')
+        .order('id', { ascending: false })
+        .limit(100);
+
+      if (error) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ ok: false, error: error.message }));
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, fotos: data || [] }));
+    })();
+    return;
+  }
+
+  // =========================
+  // API: BUSCAR POR INSTAGRAM (para mi-foto.html)
+  // =========================
+  if (req.method === 'GET' && req.url.startsWith('/api/buscar')) {
+    const parsed = url.parse(req.url, true);
+    const ig = (parsed.query.ig || '')
+      .replace('@', '')
+      .trim()
+      .toLowerCase();
+
+    if (!ig) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: false, error: 'Falta ig' }));
+    }
+
+    (async () => {
+      const { data, error } = await supabase
+        .from('fotos_mineros')
+        .select('public_url, usuario_ig, filename')
+        .eq('usuario_ig', ig)
+        .order('id', { ascending: false })
+        .limit(10);
+
+      if (error) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ ok: false, error: error.message }));
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, fotos: data || [] }));
+    })();
+    return;
+  }
+
+  // =========================
+  // STATIC FILES
   // =========================
   let parsed = url.parse(req.url).pathname;
   if (parsed === '/') parsed = '/index.html';
