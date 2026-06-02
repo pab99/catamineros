@@ -398,11 +398,7 @@ function buildSlides(data) {
     div.className = 'slide' + (i === 0 ? ' active' : '');
     const img = document.createElement('img');
     img.src = f.public_url;
-    const label = document.createElement('div');
-    label.className = 'ig-label';
-    label.textContent = f.usuario_ig && f.usuario_ig !== 'sin_usuario' ? '@' + f.usuario_ig : '';
     div.appendChild(img);
-    div.appendChild(label);
     carrousel.appendChild(div);
     slides.push(div);
   });
