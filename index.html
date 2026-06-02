@@ -135,8 +135,15 @@
     }
 
     /* ── OVERLAY ── */
-    #overlay{ position:fixed; inset:0; pointer-events:none; z-index:100; display:none; }
-    #helmet-layer{ position:fixed; inset:0; pointer-events:none; z-index:101; display:none; }
+    #overlay, #helmet-layer{
+      position:fixed;
+      width:100%; height:auto; aspect-ratio:16/9;
+      max-height:100%; max-width:calc(100vh * 16 / 9);
+      top:50%; left:50%; transform:translate(-50%,-50%);
+      pointer-events:none;
+    }
+    #overlay{ z-index:100; display:none; }
+    #helmet-layer{ z-index:101; display:none; }
 
     /* ── COUNTDOWN LATERAL ── */
     #countdown-left, #countdown-right{
@@ -275,7 +282,7 @@
     <div class="slide active" id="slide-1">
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
-      <img src="assets/logo_catamarca_gobierno.png" style="height:150px;opacity:0.92;filter:brightness(0) invert(1);margin-bottom:20px;" alt="Catamarca Gobierno">
+      <img src="assets/logo_catamarca_gobierno_c_blanca.png" style="height:150px;opacity:0.92;margin-bottom:20px;" alt="Catamarca Gobierno">
       <div class="s-title">⛏️ CATA<br>MINER@S ⛏️</div>
       <div class="s-year">CATAMARCA 2026</div>
       <div class="s-desc">Sacate una foto de minero y llevala de recuerdo del evento</div>
@@ -399,7 +406,7 @@
   <img id="gallery-main-photo" src="" alt="foto">
   <div id="gallery-thumbs"></div>
   <button id="btn-next-miner">CONTINUAR AL SIGUIENTE MINERO ⛏️</button>
-  <img src="assets/logo_catamarca_gobierno.png" class="gallery-catamarca-img" alt="Catamarca Gobierno">
+  <img src="assets/logo_catamarca_gobierno_c_blanca.png" class="gallery-catamarca-img" alt="Catamarca Gobierno">
 </section>
 
 <!-- ══════════════════════════════ SCRIPT ══════════════════════════════ -->
@@ -443,13 +450,13 @@ var tunnelReady = false;
     console.log('tunel.jpg cargado OK, chroma-key aplicado');
   };
   img.onerror = function(){ console.warn('ERROR cargando tunel.jpg'); };
-  img.src = 'assets/tunel.jpg';
+  img.src = 'assets/tunel_vertical.jpg';
 })();
 
 var logoImg = new Image();
 var logoReady = false;
 logoImg.onload = function(){ logoReady = true; };
-logoImg.src = 'assets/logo_catamarca_gobierno.png';
+logoImg.src = 'assets/logo_catamarca_gobierno_c_blanca.png';
 
 // ── STATE ──
 var igHandle          = '';
@@ -500,7 +507,11 @@ function startSlideLoop(){ stopSlideLoop(); slideTimer = setInterval(nextSlide, 
 function stopSlideLoop(){ if(slideTimer){ clearInterval(slideTimer); slideTimer=null; } }
 
 // ── OVERLAY ──
-function resizeCvs(){ cvs.width=window.innerWidth; cvs.height=window.innerHeight; hcvs.width=window.innerWidth; hcvs.height=window.innerHeight; }
+function resizeCvs(){
+  var r=cvs.getBoundingClientRect();
+  cvs.width=Math.round(r.width); cvs.height=Math.round(r.height);
+  hcvs.width=Math.round(r.width); hcvs.height=Math.round(r.height);
+}
 function showOverlay(){ cvs.style.display='block'; hcvs.style.display='block'; }
 function hideOverlay(){ cvs.style.display='none'; hcvs.style.display='none'; }
 
@@ -746,13 +757,7 @@ function renderOverlayOnto(c, W, H, ig){
   c.shadowColor='rgba(255,215,0,0.6)'; c.shadowBlur=18;
   c.fillText('⛏️  CataMiner@s 2026  ⛏️', W/2, 50);
   c.shadowBlur=0;
-  // Logo Catamarca en esquina superior izquierda del overlay
-  if(logoReady){
-    var lH=52, lW=lH*(logoImg.naturalWidth/logoImg.naturalHeight)||lH*3.2;
-    c.globalAlpha=0.82;
-    c.drawImage(logoImg, 16, 18, lW, lH);
-    c.globalAlpha=1;
-  }
+  // (logo incluido en tunel_vertical.jpg)
 
   // footer ig
   if(ig){

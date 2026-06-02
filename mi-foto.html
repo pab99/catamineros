@@ -11,13 +11,33 @@ body {
   color: white;
   text-align: center;
   font-family: sans-serif;
-  padding: 20px;
+  padding: 0;
+  margin: 0;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  padding: 20px 20px 10px;
+  display: flex;
+  justify-content: center;
+}
+header img {
+  height: 56px;
+}
+
+main {
+  flex: 1;
+  padding: 10px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
-  font-size: 1.6rem;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  margin-bottom: 16px;
   color: gold;
 }
 
@@ -53,9 +73,7 @@ button {
 
 button:active { opacity: 0.8; }
 
-#res {
-  margin-top: 16px;
-}
+#res { margin-top: 16px; width: 100%; }
 
 #res img {
   max-width: 90vw;
@@ -83,10 +101,23 @@ button:active { opacity: 0.8; }
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+footer {
+  padding: 10px;
+  color: rgba(255,255,255,0.3);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
 </style>
 </head>
 
 <body>
+
+<header>
+  <img src="assets/logo_catamarca_gobierno_c_blanca.png" alt="Catamarca Gobierno" />
+</header>
+
+<main>
 
 <h1>⛏️ TU FOTO MINERA</h1>
 
@@ -96,6 +127,10 @@ button:active { opacity: 0.8; }
 </div>
 
 <div id="res"></div>
+
+</main>
+
+<footer>® Tecnoincas 2026</footer>
 
 <script>
 const res = document.getElementById('res');
