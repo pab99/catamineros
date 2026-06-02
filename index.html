@@ -879,11 +879,14 @@ function buildKeyboard(){
 
 // ── GALLERY ──
 function silentDownload(dataUrl, filename){
-  // Guardar via servidor (sin popup de Chrome)
   fetch('/save-photo', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({dataUrl: dataUrl, filename: filename})
+   body: JSON.stringify({
+  dataUrl: dataUrl,
+  filename: filename,
+  ig: igHandle   // 👈 NUEVO: usuario de Instagram
+})
   })
   .then(function(r){ return r.json(); })
   .then(function(j){
@@ -894,17 +897,16 @@ function silentDownload(dataUrl, filename){
     }
   })
   .catch(function(e){
-    // Fallback: descarga clásica si el servidor no responde
     console.warn('POST /save-photo falló, usando descarga directa:', e);
     try {
       var a=document.createElement('a');
-      a.href=dataUrl; a.download=filename; a.style.display='none';
-      document.body.appendChild(a); a.click();
+      a.href=dataUrl; a.download=filename;
+      document.body.appendChild(a);
+      a.click();
       setTimeout(function(){ a.remove(); },500);
     } catch(e2){}
   });
 }
-
 function showGallery(){
   silentDownload(photoUrl,'cataminers_'+Date.now()+'.jpg');
   buildGallery();
