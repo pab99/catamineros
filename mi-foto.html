@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Mi Foto Minera</title>
+
+<style>
+body {
+  background:black;
+  color:white;
+  font-family:sans-serif;
+  text-align:center;
+}
+
+input {
+  padding:12px;
+  font-size:18px;
+  width:250px;
+}
+
+button {
+  padding:12px 20px;
+  margin-left:10px;
+  cursor:pointer;
+}
+
+img {
+  margin-top:20px;
+  max-width:90vw;
+  border:3px solid gold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>⛏️ TU FOTO MINERA</h1>
+
+<p>Ingresá tu Instagram</p>
+
+<input id="ig" placeholder="@usuario" />
+<button onclick="buscar()">Buscar</button>
+
+<div id="res"></div>
+
+<script>
+const SUPABASE_URL = "https://tczmjvcqgscpeyivpbyd.supabase.co";
+const SUPABASE_KEY = "TU_ANON_KEY";
+
+async function buscar() {
+  let ig = document.getElementById("ig").value.trim();
+  ig = ig.replace("@","");
+
+  const res = await fetch(
+    SUPABASE_URL + "/rest/v1/fotos_mineros?select=public_url,usuario_ig&usuario_ig=eq." + ig,
+    {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: "Bearer " + SUPABASE_KEY
+      }
+    }
+  );
+
+  const data = await res.json();
+
+  const div = document.getElementById("res");
+  div.innerHTML = "";
+
+  if (!data.length) {
+    div.innerHTML = "<p>No se encontró foto</p>";
+    return;
+  }
+
+  const img = document.createElement("img");
+  img.src = data[0].public_url;
+  div.appendChild(img);
+}
+</script>
+
+</body>
+</html>
