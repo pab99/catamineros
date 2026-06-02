@@ -4,14 +4,13 @@
 <meta charset="UTF-8" />
 <title>LED - CataMiner@s</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
 body {
   margin:0;
   background:black;
   overflow:hidden;
-  font-family:sans-serif;
 }
 
 #grid {
@@ -24,16 +23,16 @@ body {
 }
 
 img {
-  width:220px;
-  height:160px;
+  width:240px;
+  height:170px;
   object-fit:cover;
   border:2px solid gold;
-  box-shadow:0 0 10px rgba(255,215,0,0.4);
-  transition:transform 0.5s;
+  box-shadow:0 0 10px rgba(255,215,0,0.3);
+  transition:transform 0.4s;
 }
 
 img.active {
-  transform:scale(1.2);
+  transform:scale(1.15);
 }
 
 #qr {
@@ -42,7 +41,7 @@ img.active {
   right:20px;
   background:white;
   padding:10px;
-  border-radius:10px;
+  border-radius:12px;
 }
 </style>
 </head>
@@ -56,29 +55,32 @@ img.active {
 </div>
 
 <script>
-const supabaseUrl = "https://tczmjvcqgscpeyivpbyd.supabase.co";
-const supabaseKey = "PEGÁ_ACÁ_TU_ANON_KEY";
 
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = window.supabase.createClient(
+  "https://tczmjvcqgscpeyivpbyd.supabase.co",
+  "TU_ANON_KEY_AQUI"
+);
+
+let photos = [];
 
 async function loadPhotos() {
+
   const { data, error } = await supabase
-    .from('fotos_mineros')
-    .select('public_url, created_at')
-    .order('created_at', { ascending: false })
-    .limit(100);
+    .from("fotos_mineros")
+    .select("public_url")
+    .order("id", { ascending: false });
 
   if (error) {
-    console.error("SUPABASE ERROR:", error);
+    console.log("ERROR SUPA:", error);
     return;
   }
 
-  console.log("LED DATA:", data);
+  photos = data || [];
 
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  (data || []).forEach(p => {
+  photos.forEach(p => {
     if (!p.public_url) return;
 
     const img = document.createElement("img");
@@ -87,20 +89,24 @@ async function loadPhotos() {
   });
 }
 
+// animación tipo LED
 function animate() {
-  const imgs = document.querySelectorAll("img");
   let i = 0;
 
   setInterval(() => {
-    imgs.forEach(im => im.classList.remove("active"));
+    const imgs = document.querySelectorAll("img");
+    imgs.forEach(img => img.classList.remove("active"));
+
     if (imgs[i]) imgs[i].classList.add("active");
+
     i = (i + 1) % imgs.length;
   }, 1200);
 }
 
 loadPhotos();
 setInterval(loadPhotos, 5000);
-setTimeout(animate, 2000);
+setTimeout(animate, 1500);
+
 </script>
 
 </body>
