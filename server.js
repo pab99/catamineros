@@ -25,12 +25,12 @@ const MIME = {
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon',
-  '.woff2': 'font/woff2',
-  '.woff': 'font/woff',
-  '.ttf': 'font/ttf'
+  '.ico': 'image/x-icon'
 };
 
+// =========================
+// NOMBRE ARCHIVO
+// =========================
 function generarNombreInstagram(usuario) {
   const now = new Date();
   const pad = (n) => String(n).padStart(2, '0');
@@ -53,7 +53,10 @@ function generarNombreInstagram(usuario) {
   return `${fecha}_${hora}_${cleanUser}.jpeg`;
 }
 
-async function uploadToSupabase(buffer, filename) {
+// =========================
+// SUPABASE UPLOAD + DB INSERT
+// =========================
+async function uploadToSupabase(buffer, filename, usuarioIg) {
   try {
     const remotePath = `public/${filename}`;
 
@@ -65,7 +68,7 @@ async function uploadToSupabase(buffer, filename) {
       });
 
     if (error) {
-      console.error('Supabase upload error:', error.message);
+      console.error('Upload error:', error.message);
       return null;
     }
 
@@ -75,17 +78,31 @@ async function uploadToSupabase(buffer, filename) {
 
     console.log('☁️ Supabase OK:', data.publicUrl);
 
+    // 👉 INSERT EN DB (ACA ESTA LO IMPORTANTE)
+    await supabase.from('fotos_mineros').insert([
+      {
+        usuario_ig: usuarioIg,
+        filename: filename,
+        storage_path: remotePath,
+        public_url: data.publicUrl,
+        device_info: '',
+        evento: 'cataminers_2026'
+      }
+    ]);
+
     return data.publicUrl;
 
   } catch (err) {
-    console.error('Supabase exception:', err);
+    console.error('Supabase error:', err);
     return null;
   }
 }
 
+// =========================
+// SERVER
+// =========================
 const server = http.createServer((req, res) => {
 
-  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -109,58 +126,44 @@ const server = http.createServer((req, res) => {
       try {
         const obj = JSON.parse(body);
 
+        const ig = (obj.usuario || '').trim();
+        const safeIg = ig.length ? ig : 'sin_usuario';
+
         if (!obj.dataUrl) {
           res.writeHead(400);
-          return res.end(JSON.stringify({ ok: false, error: 'missing dataUrl' }));
+          return res.end(JSON.stringify({ ok: false }));
         }
 
-        const ig = (obj.ig || '').trim();
-        const filename = generarNombreInstagram(ig);
+        const filename = generarNombreInstagram(safeIg);
 
         const base64 = obj.dataUrl.replace(/^data:image\/\w+;base64,/, '');
         const buffer = Buffer.from(base64, 'base64');
 
-        // Guardar local
         const localPath = path.join(PHOTOS, filename);
 
-        fs.writeFile(localPath, buffer, async (err) => {
+        fs.writeFile(localPath, async (err) => {
 
           if (err) {
-            console.error('write error:', err);
-
             res.writeHead(500);
-            return res.end(JSON.stringify({
-              ok: false,
-              error: 'write error'
-            }));
+            return res.end(JSON.stringify({ ok: false }));
           }
 
-          console.log('📸 Foto guardada:', localPath);
+          console.log('📸 Guardada:', filename);
 
-          // responder rápido al frontend
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({
             ok: true,
             file: `fotos/${filename}`
           }));
 
-          // subir a supabase en background
-          const publicUrl = await uploadToSupabase(buffer, filename);
-
-          if (publicUrl) {
-            console.log('🌍 Public URL:', publicUrl);
-          }
-
+          // subir a supabase (background)
+          await uploadToSupabase(buffer, filename, safeIg);
         });
 
       } catch (e) {
-        console.error('bad request:', e);
-
+        console.error(e);
         res.writeHead(400);
-        res.end(JSON.stringify({
-          ok: false,
-          error: 'bad request'
-        }));
+        res.end(JSON.stringify({ ok: false }));
       }
     });
 
@@ -168,16 +171,14 @@ const server = http.createServer((req, res) => {
   }
 
   // =========================
-  // STATIC FILES
+  // STATIC
   // =========================
   let parsed = url.parse(req.url).pathname;
-
   if (parsed === '/') parsed = '/index.html';
 
   const filepath = path.join(__dirname, parsed);
 
   fs.readFile(filepath, (err, data) => {
-
     if (err) {
       res.writeHead(404);
       return res.end('Not found');
@@ -189,25 +190,12 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': mime });
     res.end(data);
   });
-
 });
 
 // =========================
 // START
 // =========================
 server.listen(PORT, () => {
-  console.log('');
-  console.log('⛏️ CataMiner@s servidor listo');
+  console.log('⛏️ CataMiner@s OK');
   console.log('→ Puerto:', PORT);
-  console.log('→ Fotos:', PHOTOS);
-  console.log('→ Supabase conectado');
-  console.log('');
-});
-
-// =========================
-// SAFETY
-// =========================
-process.on('uncaughtException', (err) => {
-  console.error('Fatal error:', err);
-  process.exit(1);
 });
