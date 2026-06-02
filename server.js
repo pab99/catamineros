@@ -122,7 +122,7 @@ const server = http.createServer(function (req, res) {
 
         const buf = Buffer.from(b64, 'base64');
 
-        const fname = generarNombreInstagram(obj.usuario || 'instagram');
+        const fname = generarNombreInstagram(obj.usuario);
 
         fs.writeFile(
           path.join(PHOTOS, fname),
@@ -210,10 +210,9 @@ server.listen(PORT, function () {
   console.log('');
 });
 
-function generarNombreInstagram(usuario = 'instagram') {
+function generarNombreInstagram(usuario) {
 
   const now = new Date();
-
   const pad = (n) => String(n).padStart(2, '0');
 
   const fecha =
