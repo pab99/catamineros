@@ -70,16 +70,17 @@ async function loadPhotos() {
 
   const data = await res.json();
 
+  console.log("LED DATA:", data);
+
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  data.forEach((p, i) => {
+  data.forEach(p => {
+    if (!p.public_url) return;
     const img = document.createElement("img");
     img.src = p.public_url;
     grid.appendChild(img);
   });
-
-  animate();
 }
 
 function animate() {
