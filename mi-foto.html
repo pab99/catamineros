@@ -10,20 +10,13 @@
 body {
   background:black;
   color:white;
-  font-family:sans-serif;
   text-align:center;
+  font-family:sans-serif;
 }
 
-input {
+input, button {
   padding:12px;
   font-size:18px;
-  width:260px;
-}
-
-button {
-  padding:12px 18px;
-  margin-left:10px;
-  cursor:pointer;
 }
 
 img {
@@ -38,8 +31,6 @@ img {
 
 <h1>⛏️ TU FOTO MINERA</h1>
 
-<p>Ingresá tu Instagram</p>
-
 <input id="ig" placeholder="@usuario" />
 <button onclick="buscar()">Buscar</button>
 
@@ -47,23 +38,24 @@ img {
 
 <script>
 
-const supabase = window.supabase.createClient(
+const supabaseClient = supabase.createClient(
   "https://tczmjvcqgscpeyivpbyd.supabase.co",
-  "TU_ANON_KEY_AQUI"
+  "TU_ANON_KEY"
 );
 
-function normalizarIg(v) {
+function normalizar(v) {
   return (v || "")
     .replace("@","")
     .trim()
     .toLowerCase();
 }
 
-async function buscar() {
+// 👇 IMPORTANTE: función GLOBAL (window-safe)
+window.buscar = async function () {
 
-  const ig = normalizarIg(document.getElementById("ig").value);
+  const ig = normalizar(document.getElementById("ig").value);
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("fotos_mineros")
     .select("public_url, usuario_ig")
     .eq("usuario_ig", ig)
@@ -73,20 +65,20 @@ async function buscar() {
   res.innerHTML = "";
 
   if (error) {
-    res.innerHTML = "Error consultando datos";
     console.log(error);
+    res.innerHTML = "Error Supabase";
     return;
   }
 
   if (!data || data.length === 0) {
-    res.innerHTML = "<p>No se encontró tu foto</p>";
+    res.innerHTML = "No se encontró foto";
     return;
   }
 
   const img = document.createElement("img");
   img.src = data[0].public_url;
   res.appendChild(img);
-}
+};
 
 </script>
 
