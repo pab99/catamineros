@@ -4,154 +4,1036 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CataMiner@s 2026</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <style>
+    :root{
+      --gold:#FFD700; --gold-dark:#c9a800; --gold-dim:#7a5c00;
+      --text:#F5F0E8; --muted:#7a6a50;
+      --red:#e53935; --red-dark:#b71c1c;
+    }
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    html,body{ width:100%; height:100%; overflow:hidden; background:#000; color:var(--text); font-family:'Oswald',sans-serif; }
 
-  <!-- ⚠️ TODO TU CSS IGUAL (lo omití acá para no duplicar innecesariamente en el chat) -->
-  <!-- (tu CSS original queda EXACTAMENTE igual) -->
+    /* ── SCREENS ── */
+    .screen{ position:fixed; inset:0; opacity:0; pointer-events:none; transition:opacity .5s; }
+    .screen.active{ opacity:1; pointer-events:auto; }
 
+    /* ── ATTRACT ── */
+    #screen-attract{
+      background:#000;
+      display:flex; flex-direction:column;
+    }
+    #slides-wrap{ flex:1; position:relative; overflow:hidden; }
+    .slide{
+      position:absolute; inset:0;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      opacity:0; transition:opacity .8s ease;
+      padding:40px 60px;
+    }
+    .slide.active{ opacity:1; }
+
+    /* Slide 1 */
+    #slide-1{ background:radial-gradient(ellipse at 50% 40%,#1a1200 0%,#000 70%); }
+    #slide-1 .s-title{
+      font-family:'Black Ops One',serif; font-size:9vw; color:var(--gold);
+      line-height:1; text-shadow:0 0 40px rgba(255,215,0,0.5),4px 4px 0 #000;
+      letter-spacing:4px; text-align:center;
+    }
+    #slide-1 .s-year{
+      font-family:'Black Ops One',serif; font-size:3vw; color:var(--gold-dark);
+      letter-spacing:12px; margin-top:10px;
+    }
+    #slide-1 .s-desc{
+      margin-top:28px; font-size:2vw; color:var(--text); letter-spacing:3px;
+      text-align:center; max-width:700px; line-height:1.6;
+    }
+
+    /* Slide 2 */
+    #slide-2{ background:linear-gradient(160deg,#0a0500 0%,#1a0d00 50%,#000 100%); }
+    .s-heading{
+      font-family:'Black Ops One',serif; font-size:4.5vw; color:var(--gold);
+      text-align:center; letter-spacing:3px; line-height:1.2;
+      text-shadow:0 0 20px rgba(255,215,0,0.4); margin-bottom:24px;
+    }
+    .stat-grid{
+      display:grid; grid-template-columns:1fr 1fr; gap:18px;
+      width:min(860px,88vw);
+    }
+    .stat-card{
+      background:rgba(255,215,0,0.05); border:1px solid rgba(255,215,0,0.25);
+      padding:20px 22px; display:flex; flex-direction:column; align-items:center; gap:5px;
+    }
+    .stat-num{ font-family:'Black Ops One',serif; font-size:4.5vw; color:var(--gold); line-height:1; }
+    .stat-label{ font-size:1.35vw; color:var(--text); letter-spacing:1.5px; text-align:center; line-height:1.4; }
+
+    /* Slide 3 */
+    #slide-3{ background:linear-gradient(135deg,#000 0%,#0d1a00 60%,#000 100%); }
+    .mineral-grid{
+      display:flex; gap:24px; flex-wrap:wrap; justify-content:center;
+      margin-top:16px; width:min(900px,92vw);
+    }
+    .mineral-item{
+      display:flex; flex-direction:column; align-items:center; gap:7px;
+      background:rgba(255,255,255,0.04); border:1px solid rgba(255,215,0,0.2);
+      padding:20px 26px; min-width:145px;
+    }
+    .mineral-icon{ font-size:3.5vw; }
+    .mineral-name{ font-family:'Black Ops One',serif; font-size:1.6vw; color:var(--gold); letter-spacing:2px; text-align:center; }
+    .mineral-detail{ font-size:1.15vw; color:var(--muted); text-align:center; line-height:1.4; }
+
+    /* Slide 4 */
+    #slide-4{ background:radial-gradient(ellipse at 50% 60%,#1a0a00,#000 70%); }
+    .s-big-icon{ font-size:12vw; margin-bottom:8px; }
+    .s-cta{
+      font-family:'Black Ops One',serif; font-size:5vw; color:var(--gold);
+      text-align:center; letter-spacing:4px; line-height:1.2;
+      text-shadow:0 0 30px rgba(255,215,0,0.5);
+    }
+    .s-cta-sub{ margin-top:16px; font-size:2vw; color:var(--text); letter-spacing:4px; text-align:center; }
+
+    /* Corners */
+    .corner{ position:absolute; width:60px; height:60px; border-color:var(--gold); border-style:solid; }
+    .corner.tl{ top:20px; left:20px; border-width:5px 0 0 5px; }
+    .corner.tr{ top:20px; right:20px; border-width:5px 5px 0 0; }
+    .corner.bl{ bottom:20px; left:20px; border-width:0 0 5px 5px; }
+    .corner.br{ bottom:20px; right:20px; border-width:0 5px 5px 0; }
+
+    /* Dots */
+    #slide-dots{ display:flex; gap:10px; justify-content:center; padding:12px 0 4px; }
+    .dot{ width:10px; height:10px; border-radius:50%; background:var(--gold-dim); transition:background .3s; }
+    .dot.active{ background:var(--gold); }
+
+    /* Attract bottom bar */
+    #attract-bottom{
+      padding:0 0 28px;
+      display:flex; flex-direction:column; align-items:center; gap:12px;
+    }
+    .catamarca-logo{
+      font-family:'Black Ops One',serif; color:#fff;
+      font-size:1.5vw; letter-spacing:4px; text-align:center;
+      line-height:1.3; opacity:0.65;
+    }
+    #btn-comenzar{
+      font-family:'Black Ops One',serif; font-size:2.2vw;
+      padding:16px 70px; letter-spacing:5px;
+      background:var(--gold); color:#000; border:none; cursor:pointer;
+      animation:pulse 2s ease-in-out infinite;
+      transition:background .12s, transform .12s;
+    }
+    #btn-comenzar:hover{ background:var(--gold-dark); transform:scale(1.03); animation:none; }
+
+    /* ── CAMERA ── */
+    #screen-camera{ background:#000; }
+    #video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
+
+    /* ── OVERLAY ── */
+    #overlay{ position:fixed; inset:0; pointer-events:none; z-index:100; display:none; }
+    #helmet-layer{ position:fixed; inset:0; pointer-events:none; z-index:101; display:none; }
+
+    /* ── COUNTDOWN LATERAL ── */
+    #countdown-left, #countdown-right{
+      position:fixed; top:50%; transform:translateY(-50%);
+      pointer-events:none; z-index:110;
+      display:none; align-items:center; justify-content:center;
+      font-family:'Black Ops One',serif; font-size:14vw; color:var(--gold);
+      text-shadow:0 0 40px rgba(255,215,0,0.9),3px 3px 0 #000;
+      width:17vw; text-align:center; line-height:1;
+    }
+    #countdown-left{ left:0; }
+    #countdown-right{ right:0; }
+
+    /* ── BOTÓN CAPTURAR ── */
+    #btn-capture{
+      position:fixed; bottom:32px; left:50%; transform:translateX(-50%);
+      z-index:150; display:none;
+      font-family:'Black Ops One',serif; font-size:2vw; letter-spacing:4px;
+      padding:18px 60px;
+      background:var(--red); color:#fff; border:none; cursor:pointer;
+      box-shadow:0 0 30px rgba(229,57,53,0.6);
+      transition:background .12s, transform .1s;
+    }
+    #btn-capture:hover{ background:var(--red-dark); transform:translateX(-50%) scale(1.04); }
+
+    /* ── REGISTER ── */
+    #screen-register{
+      background:rgba(0,0,0,0.96);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+    }
+    .register-box{
+      display:flex; flex-direction:column; align-items:center; gap:13px;
+      padding:30px 42px 22px; border:2px solid var(--gold); background:#0a0800;
+      width:min(700px,95vw); position:relative;
+    }
+    #btn-skip-x{
+      position:absolute; top:10px; right:14px;
+      background:none; border:none; color:var(--muted);
+      font-size:1.8vw; cursor:pointer; font-family:'Oswald',sans-serif;
+      font-weight:700; line-height:1; padding:4px 8px;
+      transition:color .15s;
+    }
+    #btn-skip-x:hover{ color:#f44336; }
+    .register-label{ font-family:'Black Ops One',serif; font-size:2.4vw; color:var(--gold); letter-spacing:4px; }
+    .register-sub{ font-size:1.15vw; color:var(--muted); letter-spacing:2px; margin-top:-5px; }
+    #ig-display{
+      width:100%; padding:11px 18px;
+      background:#111; color:var(--text);
+      border:2px solid var(--gold-dark);
+      font-family:'Oswald',sans-serif; font-size:2.2vw; font-weight:700;
+      text-align:center; letter-spacing:3px; min-height:50px; border-radius:4px;
+      transition:border-color .2s;
+    }
+    #ig-display.valid{ border-color:#4caf50; }
+    #ig-display.invalid{ border-color:#f44336; }
+    #ig-error{ color:#f44336; font-size:1.1vw; min-height:1.2em; font-weight:700; letter-spacing:1px; }
+    .kbd{ display:flex; flex-direction:column; gap:5px; width:100%; }
+    .kbd-row{ display:flex; gap:5px; justify-content:center; }
+    .kbtn{
+      flex:1; max-width:60px; height:44px;
+      background:#1a1400; color:var(--text); border:1px solid #4a3a00;
+      border-radius:5px; font-family:'Oswald',sans-serif; font-size:1.25vw; font-weight:700;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      transition:background .1s, transform .08s;
+      -webkit-tap-highlight-color:transparent; user-select:none;
+    }
+    .kbtn:active{ background:#3a2a00; transform:scale(0.92); }
+    .kbtn.wide{ max-width:none; flex:2; }
+    .kbtn.gold{ background:var(--gold); color:#000; border-color:var(--gold-dark); }
+    .kbtn.gold:active{ background:var(--gold-dark); }
+    .kbtn.del{ background:#2a0000; border-color:#6a0000; font-size:1.4vw; }
+    .kbtn.del:active{ background:#4a0000; }
+    #register-timer{ font-size:1.1vw; color:var(--muted); letter-spacing:2px; }
+    #register-timer span{ color:var(--gold); font-weight:700; }
+    .register-actions{ display:flex; justify-content:center; margin-top:2px; }
+    #save-btn{
+      font-family:'Black Ops One',serif; font-size:1.4vw;
+      padding:13px 44px; cursor:pointer; letter-spacing:3px;
+      background:var(--gold); color:#000; border:none; border-radius:4px;
+    }
+    #save-btn:disabled{ background:#555; color:#999; cursor:not-allowed; }
+
+    /* ── GALLERY ── */
+    #screen-gallery{
+      background:#000;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
+      padding:20px;
+    }
+    #gallery-main-photo[src=""]{display:none;}
+    #gallery-title{ font-family:'Black Ops One',serif; color:var(--gold); font-size:3vw; letter-spacing:4px; }
+    #gallery-main-photo{
+      max-width:50vw; max-height:50vh;
+      border:3px solid var(--gold); box-shadow:0 0 40px rgba(255,215,0,0.3);
+    }
+    #gallery-thumbs{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; max-width:90vw; }
+    .thumb{
+      width:96px; height:72px; object-fit:cover;
+      border:2px solid var(--gold-dim); cursor:pointer;
+      transition:border-color .2s, transform .15s;
+    }
+    .thumb:hover{ border-color:var(--gold); transform:scale(1.06); }
+    .thumb.selected{ border-color:var(--gold); box-shadow:0 0 10px rgba(255,215,0,0.5); }
+    #btn-next-miner{
+      font-family:'Black Ops One',serif; font-size:1.8vw;
+      padding:15px 52px; letter-spacing:4px;
+      background:var(--gold); color:#000; border:none; cursor:pointer;
+      transition:transform .1s, background .1s;
+    }
+    #btn-next-miner:hover{ background:var(--gold-dark); transform:scale(1.03); }
+    .gallery-catamarca{
+      font-family:'Black Ops One',serif; color:#fff; font-size:1.2vw;
+      letter-spacing:3px; opacity:0.45; text-align:center; line-height:1.35;
+    }
+
+
+    .catamarca-logo-img{
+      height:38px; opacity:0.75; filter:brightness(0) invert(1);
+    }
+    .gallery-catamarca-img{
+      height:30px; opacity:0.4; filter:brightness(0) invert(1);
+    }
+    /* ── ANIMATIONS ── */
+    @keyframes pulse{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
+    @keyframes cdPop{ 0%{ transform:scale(1.6); opacity:1; } 90%{ transform:scale(1); opacity:1; } 100%{ opacity:0; } }
+    @keyframes flashOut{ to{ opacity:0; } }
+  </style>
 </head>
-
 <body>
 
-<!-- ================= CAMERA ================= -->
-<section id="screen-camera" class="screen">
-  <video id="video" autoplay playsinline muted></video>
-</section>
+<!-- ══════════════════════════════ ATTRACT ══════════════════════════════ -->
+<section id="screen-attract" class="screen active">
 
-<!-- ================= REGISTER ================= -->
-<section id="screen-register" class="screen">
-  <div class="register-box">
+  <div id="slides-wrap">
 
-    <button id="btn-skip-x">✕</button>
-
-    <div class="register-label">¿CUÁL ES TU @?</div>
-
-    <div id="ig-display">@</div>
-    <div id="ig-error"></div>
-
-    <div class="kbd">
-      <div id="row-nums"></div>
-      <div id="row-q"></div>
-      <div id="row-a"></div>
-      <div id="row-z"></div>
-      <div id="row-bot"></div>
+    <!-- Slide 1: Bienvenida -->
+    <div class="slide active" id="slide-1">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <img src="assets/logo_catamarca_gobierno.png" style="height:150px;opacity:0.92;filter:brightness(0) invert(1);margin-bottom:20px;" alt="Catamarca Gobierno">
+      <div class="s-title">⛏️ CATA<br>MINER@S ⛏️</div>
+      <div class="s-year">CATAMARCA 2026</div>
+      <div class="s-desc">Sacate una foto de minero y llevala de recuerdo del evento</div>
     </div>
 
-    <button id="save-btn" disabled>SACAR FOTO</button>
+    <!-- Slide 2: Datos minería catamarqueña -->
+    <div class="slide" id="slide-2">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div class="s-heading">⛏️ CATAMARCA MINERA ⛏️</div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-num">#1</div>
+          <div class="stat-label">Provincia productora de cobre en Argentina</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">30+</div>
+          <div class="stat-label">Años de historia minera moderna en la provincia</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">15.000</div>
+          <div class="stat-label">Empleos directos e indirectos generados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">US$ 2B+</div>
+          <div class="stat-label">Exportaciones mineras anuales</div>
+        </div>
+      </div>
+    </div>
 
+    <!-- Slide 3: Recursos minerales -->
+    <div class="slide" id="slide-3">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div class="s-heading">💎 RIQUEZA MINERAL DE CATAMARCA 💎</div>
+      <div class="mineral-grid">
+        <div class="mineral-item">
+          <div class="mineral-icon">🟤</div>
+          <div class="mineral-name">COBRE</div>
+          <div class="mineral-detail">Principal recurso de exportación</div>
+        </div>
+        <div class="mineral-item">
+          <div class="mineral-icon">⚪</div>
+          <div class="mineral-name">ORO</div>
+          <div class="mineral-detail">Yacimientos en Belén y Tinogasta</div>
+        </div>
+        <div class="mineral-item">
+          <div class="mineral-icon">🔵</div>
+          <div class="mineral-name">LITIO</div>
+          <div class="mineral-detail">Salares del noroeste provincial</div>
+        </div>
+        <div class="mineral-item">
+          <div class="mineral-icon">⚫</div>
+          <div class="mineral-name">MOLIBDENO</div>
+          <div class="mineral-detail">Alumbrera, co-producto clave</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: CTA -->
+    <div class="slide" id="slide-4">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div class="s-big-icon">📸</div>
+      <div class="s-cta">¡SACATE UNA<br>FOTO MINERA!</div>
+      <div class="s-cta-sub">TOCÁ COMENZAR Y PONÉ TU CASCO</div>
+    </div>
+
+  </div><!-- /slides-wrap -->
+
+  <div id="slide-dots">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
+  <div id="attract-bottom">
+    <button id="btn-comenzar">⛏️ &nbsp;COMENZAR&nbsp; ⛏️</button>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════ CAMERA ══════════════════════════════ -->
+<section id="screen-camera" class="screen">
+  <video id="video" autoplay playsinline muted crossorigin="anonymous"></video>
+</section>
+
+<!-- ══════════════════════════════ OVERLAYS ══════════════════════════════ -->
+<canvas id="overlay"></canvas>
+<canvas id="helmet-layer"></canvas>
+<div id="countdown-left"></div>
+<div id="countdown-right"></div>
+<button id="btn-capture">📸 &nbsp;CAPTURAR FOTO</button>
+
+<!-- ══════════════════════════════ REGISTER ══════════════════════════════ -->
+<section id="screen-register" class="screen">
+  <div class="register-box">
+    <button id="btn-skip-x" title="Omitir y continuar">✕</button>
+    <div class="register-label">⛏️ ¿CUÁL ES TU @? ⛏️</div>
+    <div class="register-sub">INGRESÁ TU INSTAGRAM PARA LA FOTO</div>
+    <div id="ig-display">@</div>
+    <div id="ig-error"></div>
+    <div class="kbd">
+      <div class="kbd-row" id="row-nums"></div>
+      <div class="kbd-row" id="row-q"></div>
+      <div class="kbd-row" id="row-a"></div>
+      <div class="kbd-row" id="row-z"></div>
+      <div class="kbd-row" id="row-bot"></div>
+    </div>
+    <div id="register-timer">Volviendo al inicio en <span id="timer-secs">30</span>s sin actividad</div>
+    <div class="register-actions">
+      <button id="save-btn" disabled>⛏️ &nbsp;SACAR FOTO&nbsp; ⛏️</button>
+    </div>
   </div>
 </section>
 
-<!-- ================= SCRIPT ================= -->
+<!-- ══════════════════════════════ GALLERY ══════════════════════════════ -->
+<section id="screen-gallery" class="screen">
+  <div id="gallery-title">⛏️ TU FOTO MINERA ⛏️</div>
+  <img id="gallery-main-photo" src="" alt="foto">
+  <div id="gallery-thumbs"></div>
+  <button id="btn-next-miner">CONTINUAR AL SIGUIENTE MINERO ⛏️</button>
+  <img src="assets/logo_catamarca_gobierno.png" class="gallery-catamarca-img" alt="Catamarca Gobierno">
+</section>
+
+<!-- ══════════════════════════════ SCRIPT ══════════════════════════════ -->
 <script>
 'use strict';
 
-var video = document.getElementById('video');
-var igHandle = '';
-var igValue = '';
-var photoUrl = '';
-var sessionPhotos = [];
+// ── REFS ──
+var video         = document.getElementById('video');
+var cvs           = document.getElementById('overlay');
+var ctx           = cvs.getContext('2d');
+var hcvs          = document.getElementById('helmet-layer');
+var hctx          = hcvs.getContext('2d');
+var cdLeft        = document.getElementById('countdown-left');
+var cdRight       = document.getElementById('countdown-right');
+var igDisplay     = document.getElementById('ig-display');
+var igError       = document.getElementById('ig-error');
+var saveBtn       = document.getElementById('save-btn');
+var btnCapture    = document.getElementById('btn-capture');
+var timerSecsEl   = document.getElementById('timer-secs');
 
-/* ================= CAPTURE + SEND ================= */
+// ── TUNNEL JPG con chroma-key ──
+var tunnelImg = null;
+var tunnelReady = false;
+(function(){
+  var img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = function(){
+    var tmp = document.createElement('canvas');
+    tmp.width = img.naturalWidth; tmp.height = img.naturalHeight;
+    var tc = tmp.getContext('2d');
+    tc.drawImage(img, 0, 0);
+    var id = tc.getImageData(0, 0, tmp.width, tmp.height);
+    var d = id.data;
+    for(var i=0; i<d.length; i+=4){
+      var r=d[i], g=d[i+1], b=d[i+2];
+      if(g > 100 && g > r * 1.35 && g > b * 1.35){ d[i+3]=0; }
+    }
+    tc.putImageData(id, 0, 0);
+    tunnelImg = tmp;
+    tunnelReady = true;
+    console.log('tunel.jpg cargado OK, chroma-key aplicado');
+  };
+  img.onerror = function(){ console.warn('ERROR cargando tunel.jpg'); };
+  img.src = 'assets/tunel.jpg';
+})();
 
+var logoImg = new Image();
+var logoReady = false;
+logoImg.onload = function(){ logoReady = true; };
+logoImg.src = 'assets/logo_catamarca_gobierno.png';
+
+// ── STATE ──
+var igHandle          = '';
+var igValue           = '';
+var lastFace          = null;
+var lastAngle         = 0;   // radianes, inclinación de la cabeza
+var photoUrl          = '';
+var faceReady         = false;
+var detecting         = false;
+var detectSession     = 0;
+var sessionPhotos     = [];
+var countdownCancel   = null;
+var registerTimerRef  = null;
+var captureTriggered  = false;
+
+// ── SCREEN SWITCH ──
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+
+function goAttract(){
+  clearRegisterTimer();
+  cancelCountdown();
+  hideOverlay();
+  hideCaptureBtn();
+  video.style.visibility='visible';
+  igHandle = ''; igValue = ''; lastFace = null; captureTriggered = false;
+  igUpdateDisplay();
+  go('screen-attract');
+  startSlideLoop();
+}
+
+// ── SLIDE LOOP ──
+var slideIndex    = 0;
+var slideTimer    = null;
+var SLIDE_MS      = 6000;
+var slides        = document.querySelectorAll('.slide');
+var dots          = document.querySelectorAll('.dot');
+
+function showSlide(n){
+  slides.forEach(function(s,i){ s.classList.toggle('active', i===n); });
+  dots.forEach(function(d,i){ d.classList.toggle('active', i===n); });
+  slideIndex = n;
+}
+function nextSlide(){ showSlide((slideIndex+1) % slides.length); }
+function startSlideLoop(){ stopSlideLoop(); slideTimer = setInterval(nextSlide, SLIDE_MS); }
+function stopSlideLoop(){ if(slideTimer){ clearInterval(slideTimer); slideTimer=null; } }
+
+// ── OVERLAY ──
+function resizeCvs(){ cvs.width=window.innerWidth; cvs.height=window.innerHeight; hcvs.width=window.innerWidth; hcvs.height=window.innerHeight; }
+function showOverlay(){ cvs.style.display='block'; hcvs.style.display='block'; }
+function hideOverlay(){ cvs.style.display='none'; hcvs.style.display='none'; }
+
+function renderFrame(ig){
+  ig = ig||'';
+  var W=cvs.width, H=cvs.height;
+  // Canvas 1: túnel
+  ctx.clearRect(0,0,W,H);
+  if(tunnelReady){ ctx.drawImage(tunnelImg,0,0,W,H); }
+  // Canvas 2: casco + UI (siempre encima)
+  hctx.clearRect(0,0,W,H);
+  renderOverlayOnto(hctx, W, H, ig);
+}
+
+// ── HELMET ──
+function drawMinerHelmet(ctx, cx, topY, faceW, angle){
+  ctx.save(); ctx.shadowBlur=0;
+  angle = angle||0;
+  ctx.translate(cx, topY);
+  ctx.rotate(angle);
+  ctx.translate(-cx, -topY);
+
+  var w  = faceW*1.55;           // ancho total del casco
+  var h  = w*0.58;               // altura cúpula
+  var y0 = topY - h*0.75;       // tope de la cúpula
+  var x0 = cx - w/2;
+
+  // ── Cúpula principal (perfil redondeado) ──
+  var domeGrad = ctx.createLinearGradient(x0, y0, x0+w, y0+h);
+  domeGrad.addColorStop(0,   '#FFE83A');
+  domeGrad.addColorStop(0.35,'#FFD700');
+  domeGrad.addColorStop(0.75,'#E8C000');
+  domeGrad.addColorStop(1,   '#B89000');
+  ctx.beginPath();
+  ctx.moveTo(x0 + w*0.08, y0+h*0.85);
+  ctx.bezierCurveTo(x0,          y0+h*0.85, x0,          y0+h*0.3,  cx,         y0);
+  ctx.bezierCurveTo(x0+w,        y0+h*0.3,  x0+w,        y0+h*0.85, x0+w*0.92,  y0+h*0.85);
+  ctx.closePath();
+  ctx.fillStyle = domeGrad;
+  ctx.fill();
+
+  // ── Reflejo / brillo superior ──
+  ctx.beginPath();
+  ctx.ellipse(cx - w*0.05, y0 + h*0.18, w*0.28, h*0.10, -0.15, 0, 2*Math.PI);
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.fill();
+
+  // ── Ala / visera inferior (más pronunciada, tipo casco minero) ──
+  var brimY = y0 + h*0.82;
+  var brimGrad = ctx.createLinearGradient(0, brimY, 0, brimY+h*0.22);
+  brimGrad.addColorStop(0, '#C8A000');
+  brimGrad.addColorStop(1, '#8A6A00');
+  ctx.beginPath();
+  ctx.moveTo(x0 - w*0.10, brimY + h*0.05);
+  ctx.bezierCurveTo(x0 - w*0.10, brimY - h*0.04, x0+w*0.08, brimY - h*0.04, x0+w*0.08, brimY);
+  ctx.lineTo(x0+w*0.92, brimY);
+  ctx.bezierCurveTo(x0+w*0.92, brimY - h*0.04, x0+w+w*0.10, brimY - h*0.04, x0+w+w*0.10, brimY + h*0.05);
+  ctx.ellipse(cx, brimY + h*0.05, w/2 + w*0.10, h*0.10, 0, 0, Math.PI);
+  ctx.closePath();
+  ctx.fillStyle = brimGrad;
+  ctx.fill();
+
+  // ── Visera frontal (saliente al frente del casco) ──
+  var visorY = brimY + h*0.12;
+  ctx.beginPath();
+  ctx.moveTo(cx - w*0.42, visorY - h*0.03);
+  ctx.bezierCurveTo(cx - w*0.55, visorY + h*0.05, cx - w*0.55, visorY + h*0.12, cx - w*0.35, visorY + h*0.14);
+  ctx.lineTo(cx + w*0.35, visorY + h*0.14);
+  ctx.bezierCurveTo(cx + w*0.55, visorY + h*0.12, cx + w*0.55, visorY + h*0.05, cx + w*0.42, visorY - h*0.03);
+  ctx.closePath();
+  ctx.fillStyle = '#A07800';
+  ctx.fill();
+
+  // ── Banda de ajuste horizontal ──
+  ctx.beginPath();
+  ctx.rect(x0 + w*0.03, y0+h*0.62, w*0.94, h*0.09);
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
+  ctx.fill();
+
+  // ── Contorno cúpula ──
+  ctx.beginPath();
+  ctx.moveTo(x0 + w*0.08, y0+h*0.85);
+  ctx.bezierCurveTo(x0, y0+h*0.85, x0, y0+h*0.3, cx, y0);
+  ctx.bezierCurveTo(x0+w, y0+h*0.3, x0+w, y0+h*0.85, x0+w*0.92, y0+h*0.85);
+  ctx.strokeStyle = '#8A6A00';
+  ctx.lineWidth = Math.max(2.5, w*0.016);
+  ctx.stroke();
+
+  // ── LÁMPARA FRONTAL CIRCULAR ──
+  var lx = cx;
+  var ly = y0 + h*0.50;
+  var lR = w * 0.115;
+
+  // Halo de luz
+  var halo = ctx.createRadialGradient(lx, ly, lR*0.8, lx, ly, lR*4.5);
+  halo.addColorStop(0, 'rgba(255,240,120,0.38)');
+  halo.addColorStop(1, 'rgba(255,200,0,0)');
+  ctx.beginPath(); ctx.arc(lx, ly, lR*4.5, 0, 2*Math.PI);
+  ctx.fillStyle = halo; ctx.fill();
+
+  // Cuerpo exterior (negro)
+  ctx.beginPath(); ctx.arc(lx, ly, lR*1.35, 0, 2*Math.PI);
+  ctx.fillStyle = '#1A1200'; ctx.fill();
+  ctx.strokeStyle = '#5A4800'; ctx.lineWidth = Math.max(1.5, w*0.01);
+  ctx.stroke();
+
+  // Cuerpo interior (metal)
+  ctx.beginPath(); ctx.arc(lx, ly, lR*1.15, 0, 2*Math.PI);
+  var metalGrad = ctx.createRadialGradient(lx-lR*0.3, ly-lR*0.3, lR*0.1, lx, ly, lR*1.15);
+  metalGrad.addColorStop(0, '#D4A820');
+  metalGrad.addColorStop(0.6, '#8A6010');
+  metalGrad.addColorStop(1, '#4A3008');
+  ctx.fillStyle = metalGrad; ctx.fill();
+
+  // Cristal de la lámpara
+  ctx.beginPath(); ctx.arc(lx, ly, lR, 0, 2*Math.PI);
+  var lampGrad = ctx.createRadialGradient(lx-lR*0.3, ly-lR*0.3, lR*0.05, lx, ly, lR);
+  lampGrad.addColorStop(0, '#FFFDE0');
+  lampGrad.addColorStop(0.4, '#FFE84D');
+  lampGrad.addColorStop(1,   '#FF9A00');
+  ctx.fillStyle = lampGrad; ctx.fill();
+
+  // Reflejo del cristal
+  ctx.beginPath(); ctx.ellipse(lx - lR*0.3, ly - lR*0.3, lR*0.35, lR*0.2, -0.5, 0, 2*Math.PI);
+  ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.fill();
+
+  ctx.restore();
+}
+
+// ── RENDER LOOP ──
+function loop(){ if(cvs.style.display!=='none') renderFrame(igHandle); requestAnimationFrame(loop); }
+
+// ── CAMERA ──
+function startCamera(){
+  return new Promise(function(resolve,reject){
+    navigator.mediaDevices.getUserMedia({ video:{facingMode:'user',width:1280,height:720}, audio:false })
+      .then(function(stream){
+        video.srcObject=stream;
+        video.oncanplay=function(){ resolve(); };
+        video.onerror=function(e){ reject(e); };
+        video.load();
+      }).catch(reject);
+  });
+}
+
+// ── FACE DETECTION ──
+function tryLoadFace(){
+  if(typeof faceapi==='undefined') return;
+  var base='https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/model';
+  Promise.all([
+    faceapi.nets.tinyFaceDetector.loadFromUri(base),
+    faceapi.nets.faceLandmark68TinyNet.loadFromUri(base)
+  ]).then(function(){ faceReady=true; })
+    .catch(function(e){ console.warn('face-api:',e); });
+}
+function startDetect(){
+  if(!faceReady) return;
+  detecting = false; // forzar reinicio limpio
+  detecting = true;
+  var sessionId = ++detectSession; // cada sesión tiene su propio ID
+  (function tick(){
+    if(!detecting || detectSession !== sessionId) return; // sesión vieja → morir
+    faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({inputSize:224,scoreThreshold:0.5}))
+      .withFaceLandmarks(true)
+      .then(function(d){
+        if(detectSession !== sessionId) return;
+        if(d){
+          lastFace=d.detection;
+          var lm=d.landmarks.positions;
+          var lEye=lm[39], rEye=lm[42];
+          var dx=rEye.x-lEye.x, dy=rEye.y-lEye.y;
+          lastAngle = -Math.atan2(dy, dx);
+        } else {
+          lastFace=null; lastAngle=0;
+        }
+      })
+      .catch(function(){ lastFace=null; })
+      .finally(function(){ setTimeout(tick, 100); });
+  })();
+}
+
+// ── COUNTDOWN ──
+function showCaptureBtn(){ btnCapture.style.display='block'; }
+function hideCaptureBtn(){ btnCapture.style.display='none'; }
+function hideCd(){ cdLeft.style.display=cdRight.style.display='none'; cdLeft.textContent=cdRight.textContent=''; }
+function cancelCountdown(){ if(countdownCancel){ countdownCancel(); countdownCancel=null; } hideCd(); }
+
+function countdown(n){
+  return new Promise(function(resolve){
+    var i=n, cancelled=false;
+    countdownCancel=function(){ cancelled=true; };
+    function tick(){
+      if(cancelled){ hideCd(); resolve(); return; }
+      var txt=i>0?String(i):'📸';
+      cdLeft.textContent=cdRight.textContent=txt;
+      cdLeft.style.display=cdRight.style.display='flex';
+      cdLeft.style.animation=cdRight.style.animation='none';
+      void cdLeft.offsetWidth;
+      cdLeft.style.animation=cdRight.style.animation='cdPop .9s ease forwards';
+      if(i===0){ setTimeout(function(){ hideCd(); resolve(); },700); }
+      else { i--; setTimeout(tick,1000); }
+    }
+    tick();
+  });
+}
+
+// ── CAPTURE ──
+function capture(ig){
+  ig=ig||'';
+  var snap=document.createElement('canvas');
+  snap.width=window.innerWidth; snap.height=window.innerHeight;
+  var sc=snap.getContext('2d');
+
+  // 1. Dibujar video (desespejado — el video CSS está scaleX(-1) pero drawImage lo toma sin transformar)
+  sc.save(); sc.translate(snap.width,0); sc.scale(-1,1);
+  sc.drawImage(video,0,0,snap.width,snap.height);
+  sc.restore();
+
+  // 2. Renderizar el tunnel SVG directamente
+  if(tunnelReady){ sc.drawImage(tunnelImg,0,0,snap.width,snap.height); }
+
+  // 3. Renderizar todos los elementos del overlay en el snap (misma lógica que renderFrame)
+  renderOverlayOnto(sc, snap.width, snap.height, ig);
+
+  return snap.toDataURL('image/jpeg',0.92);
+}
+
+// Renderiza el overlay sobre cualquier contexto dado (para captura y para el canvas live)
+function renderOverlayOnto(c, W, H, ig){
+  ig=ig||'';
+
+  // corners
+  c.strokeStyle='#FFD700'; c.lineWidth=6; c.lineCap='square';
+  var sz=70,pad=24;
+  [[pad,pad,1,1],[W-pad,pad,-1,1],[pad,H-pad,1,-1],[W-pad,H-pad,-1,-1]].forEach(function(pt){
+    c.beginPath(); c.moveTo(pt[0]+pt[2]*sz,pt[1]); c.lineTo(pt[0],pt[1]); c.lineTo(pt[0],pt[1]+pt[3]*sz); c.stroke();
+  });
+
+  // header
+  c.fillStyle='rgba(0,0,0,0.65)'; c.fillRect(0,0,W,90);
+  c.font=Math.round(W*0.038)+"px 'Black Ops One',serif";
+  c.fillStyle='#FFD700'; c.textAlign='center'; c.textBaseline='middle';
+  c.shadowColor='rgba(255,215,0,0.6)'; c.shadowBlur=18;
+  c.fillText('⛏️  CataMiner@s 2026  ⛏️', W/2, 50);
+  c.shadowBlur=0;
+  // Logo Catamarca en esquina superior izquierda del overlay
+  if(logoReady){
+    var lH=52, lW=lH*(logoImg.naturalWidth/logoImg.naturalHeight)||lH*3.2;
+    c.globalAlpha=0.82;
+    c.drawImage(logoImg, 16, 18, lW, lH);
+    c.globalAlpha=1;
+  }
+
+  // footer ig
+  if(ig){
+    var handle=ig.charAt(0)==='@'?ig:'@'+ig;
+    var bH=64,bW=Math.min(400,W*0.6),bX=W/2-bW/2,bY=H-24-bH;
+    c.fillStyle='rgba(0,0,0,0.75)'; c.fillRect(bX,bY,bW,bH);
+    c.font='700 '+Math.round(W*0.026)+"px 'Oswald',sans-serif";
+    c.fillStyle='#FFD700'; c.textAlign='center'; c.textBaseline='middle';
+    c.fillText('💎  '+handle+'  💎', W/2, bY+bH/2);
+  }
+
+  // óvalo guía — siempre visible para posicionar la cara
+  (function drawOval(){
+    var oX = W/2, oY = H*0.48;
+    var oRx = W*0.13, oRy = H*0.28;
+    c.save();
+    c.strokeStyle = lastFace ? 'rgba(255,215,0,0.35)' : 'rgba(255,215,0,0.75)';
+    c.lineWidth = 3;
+    c.setLineDash([14,10]);
+    c.beginPath();
+    c.ellipse(oX, oY, oRx, oRy, 0, 0, Math.PI*2);
+    c.stroke();
+    c.setLineDash([]);
+    if(!lastFace){
+      c.fillStyle='rgba(255,215,0,0.85)';
+      c.font='bold '+Math.round(W*0.02)+"px 'Oswald',sans-serif";
+      c.textAlign='center'; c.textBaseline='top';
+      c.fillText('⬆  PONÉ TU CARA AQUÍ  ⬆', oX, oY+oRy+14);
+    }
+    c.restore();
+  })();
+
+  // helmet
+  if(lastFace && lastFace.box){
+    var vW=video.videoWidth||W, vH=video.videoHeight||H;
+    var scaleX=W/vW;
+    var fX2=(vW-lastFace.box.x-lastFace.box.width)*scaleX;
+    var fY2=lastFace.box.y*(H/vH);
+    var fW2=lastFace.box.width*scaleX;
+    drawMinerHelmet(c, fX2+fW2/2, fY2 - fW2*0.27, fW2*0.5, lastAngle);
+  }
+}
+
+function doCapture(){
+  if(captureTriggered) return;
+  captureTriggered=true;
+  cancelCountdown();
+  hideCaptureBtn();
+
+  // Capturar con ig ya conocido
+  photoUrl=capture(igHandle);
+  sessionPhotos.push(photoUrl);
+
+  // Flash blanco — ocultar video Y overlay para que no se vea el video crudo
+  hideOverlay();
+  video.style.visibility='hidden';
+  var fl=document.createElement('div');
+  Object.assign(fl.style,{position:'fixed',inset:'0',background:'#fff',zIndex:'200',pointerEvents:'none',animation:'flashOut .4s ease forwards'});
+  document.body.appendChild(fl);
+  setTimeout(function(){
+    fl.remove();
+    showGallery();
+  },400);
+}
+
+// ── REGISTER TIMER ──
+var REGISTER_TIMEOUT=30;
+function startRegisterTimer(){
+  clearRegisterTimer();
+  var secs=REGISTER_TIMEOUT;
+  timerSecsEl.textContent=secs;
+  registerTimerRef=setInterval(function(){
+    secs--;
+    timerSecsEl.textContent=secs;
+    if(secs<=0){ clearRegisterTimer(); goAttract(); }
+  },1000);
+}
+function clearRegisterTimer(){
+  if(registerTimerRef){ clearInterval(registerTimerRef); registerTimerRef=null; }
+}
+function resetRegisterTimer(){
+  clearRegisterTimer(); startRegisterTimer();
+}
+
+// ── KEYBOARD ──
+function igValid(v){ return v.length>=1 && v.length<=30 && /^[a-zA-Z0-9._]+$/.test(v); }
+
+function igUpdateDisplay(){
+  igDisplay.textContent='@'+(igValue||'');
+  if(!igValue.length){
+    igDisplay.className=''; igError.textContent=''; saveBtn.disabled=true;
+  } else if(igValid(igValue)){
+    igDisplay.className='valid'; igError.textContent=''; saveBtn.disabled=false;
+  } else {
+    igDisplay.className='invalid';
+    igError.textContent=igValue.length>30?'Máximo 30 caracteres':'Solo letras, números, punto y guión bajo';
+    saveBtn.disabled=true;
+  }
+}
+
+function buildKeyboard(){
+  var rows=[
+    {id:'row-nums',keys:['1','2','3','4','5','6','7','8','9','0']},
+    {id:'row-q',   keys:['Q','W','E','R','T','Y','U','I','O','P']},
+    {id:'row-a',   keys:['A','S','D','F','G','H','J','K','L']},
+    {id:'row-z',   keys:['Z','X','C','V','B','N','M','.',  '_']},
+  ];
+  rows.forEach(function(row){
+    var el=document.getElementById(row.id);
+    row.keys.forEach(function(k){
+      var btn=document.createElement('button');
+      btn.className='kbtn'; btn.textContent=k;
+      btn.addEventListener('click',function(){
+        playHit('key');
+        resetRegisterTimer();
+        if(igValue.length<30){ igValue+=k.toLowerCase(); igUpdateDisplay(); }
+      });
+      el.appendChild(btn);
+    });
+  });
+  var botRow=document.getElementById('row-bot');
+  var clrBtn=document.createElement('button');
+  clrBtn.className='kbtn wide'; clrBtn.textContent='BORRAR TODO';
+  clrBtn.addEventListener('click',function(){ playHit('hammer'); resetRegisterTimer(); igValue=''; igUpdateDisplay(); });
+  botRow.appendChild(clrBtn);
+  var delBtn=document.createElement('button');
+  delBtn.className='kbtn wide del'; delBtn.textContent='⌫';
+  delBtn.addEventListener('click',function(){ playHit('key'); resetRegisterTimer(); igValue=igValue.slice(0,-1); igUpdateDisplay(); });
+  botRow.appendChild(delBtn);
+}
+
+// ── GALLERY ──
 function silentDownload(dataUrl, filename){
-
-  // 👇 ACA está el FIX IMPORTANTE
-  var usuario = (igHandle && igHandle.length > 0)
-    ? igHandle
-    : 'instagram';
-
+  // Guardar via servidor (sin popup de Chrome)
   fetch('/save-photo', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      dataUrl: dataUrl,
-      filename: filename,
-      usuario: usuario
-    })
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({dataUrl: dataUrl, filename: filename})
   })
   .then(function(r){ return r.json(); })
   .then(function(j){
-
     console.log('Foto guardada:', j.file);
-
     if(j.publicUrl){
       photoUrl = j.publicUrl;
       buildGallery();
     }
-
   })
   .catch(function(e){
-
-    console.warn('Fallback download:', e);
-
-    var a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = filename;
-    a.click();
-
+    // Fallback: descarga clásica si el servidor no responde
+    console.warn('POST /save-photo falló, usando descarga directa:', e);
+    try {
+      var a=document.createElement('a');
+      a.href=dataUrl; a.download=filename; a.style.display='none';
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ a.remove(); },500);
+    } catch(e2){}
   });
 }
 
-/* ================= IG VALIDATION ================= */
-
-function igValid(v){
-  return v.length >= 1 && v.length <= 30 && /^[a-zA-Z0-9._]+$/.test(v);
+function showGallery(){
+  silentDownload(photoUrl,'cataminers_'+Date.now()+'.jpg');
+  buildGallery();
+  go('screen-gallery');
 }
 
-/* ================= DISPLAY ================= */
-
-function igUpdateDisplay(){
-  document.getElementById('ig-display').textContent = '@' + igValue;
+function buildGallery(){
+  document.getElementById('gallery-main-photo').src=photoUrl;
+  var wrap=document.getElementById('gallery-thumbs');
+  wrap.innerHTML='';
+  if(sessionPhotos.length>1){
+    sessionPhotos.forEach(function(url){
+      var img=document.createElement('img');
+      img.className='thumb'+(url===photoUrl?' selected':'');
+      img.src=url;
+      img.addEventListener('click',function(){
+        document.getElementById('gallery-main-photo').src=url;
+        document.querySelectorAll('.thumb').forEach(function(t){ t.classList.remove('selected'); });
+        img.classList.add('selected');
+      });
+      wrap.appendChild(img);
+    });
+  }
 }
 
-/* ================= CAMERA CAPTURE FLOW ================= */
+// ── FLOW ──
+document.getElementById('btn-comenzar').addEventListener('click',function(e){ playHit('hammer');
+  e.stopPropagation();
+  stopSlideLoop();
+  captureTriggered=false;
+  igHandle=''; igValue=''; igUpdateDisplay();
+  go('screen-register');
+  startRegisterTimer();
+});
 
-function doCapture(){
+// Botón capturar manual (rojo)
+btnCapture.addEventListener('click', function(){ playHit('hammer'); doCapture(); });
 
-  var canvas = document.createElement('canvas');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  var ctx = canvas.getContext('2d');
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  var dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-
-  var filename = 'cataminers_' + Date.now() + '.jpg';
-
-  sessionPhotos.push(dataUrl);
-
-  silentDownload(dataUrl, filename);
-}
-
-/* ================= SIMPLE UI HOOKS ================= */
-
-document.getElementById('save-btn').addEventListener('click', function(){
-
+// Guardar instagram → ir a cámara
+saveBtn.addEventListener('click',function(){
   if(!igValid(igValue)) return;
-
-  igHandle = igValue;
-
-  doCapture();
+  clearRegisterTimer();
+  igHandle=igValue;
+  goCamera();
 });
 
-document.getElementById('btn-skip-x').addEventListener('click', function(){
-
-  igHandle = 'instagram';
-
-  doCapture();
+// X en registro → saltar instagram, igual ir a cámara
+document.getElementById('btn-skip-x').addEventListener('click',function(){
+  clearRegisterTimer();
+  igHandle='';
+  goCamera();
 });
 
-/* ================= INIT ================= */
+function goCamera(){
+  captureTriggered=false;
+  go('screen-camera');
+  showOverlay();
+  showCaptureBtn();
+  startCamera()
+    .then(function(){
+      startDetect();
+      return countdown(10);
+    })
+    .then(function(){
+      if(!captureTriggered){ doCapture(); }
+    })
+    .catch(function(err){
+      console.error('goCamera error:', err);
+      goAttract();
+    });
+}
 
-console.log('INDEX FIXED READY');
+// Continuar al siguiente minero → vuelve al loop
+document.getElementById('btn-next-miner').addEventListener('click',function(){
+  goAttract();
+});
 
+
+// ── SONIDOS ──
+var AudioCtx = window.AudioContext || window.webkitAudioContext;
+var audioCtx = null;
+function getAudioCtx(){
+  if(!audioCtx){ try{ audioCtx = new AudioCtx(); }catch(e){} }
+  return audioCtx;
+}
+
+function playHit(type){
+  var ac = getAudioCtx(); if(!ac) return;
+  try{
+    var buf = ac.createBuffer(1, ac.sampleRate * 0.18, ac.sampleRate);
+    var data = buf.getChannelData(0);
+    if(type === 'key'){
+      // Click corto tipo roca: burst de ruido con decay rápido
+      for(var i=0;i<data.length;i++){
+        var t = i/ac.sampleRate;
+        var env = Math.exp(-t*55);
+        data[i] = (Math.random()*2-1) * env * 0.55
+                + Math.sin(2*Math.PI*180*t) * env * 0.25
+                + Math.sin(2*Math.PI*95*t) * Math.exp(-t*80) * 0.35;
+      }
+    } else {
+      // Golpe martillo más grave y largo
+      for(var i=0;i<data.length;i++){
+        var t = i/ac.sampleRate;
+        var env = Math.exp(-t*28);
+        data[i] = (Math.random()*2-1) * env * 0.45
+                + Math.sin(2*Math.PI*85*t) * Math.exp(-t*22) * 0.55
+                + Math.sin(2*Math.PI*140*t) * Math.exp(-t*35) * 0.25;
+      }
+    }
+    var src = ac.createBufferSource();
+    src.buffer = buf;
+    var gain = ac.createGain();
+    gain.gain.value = 0.7;
+    src.connect(gain); gain.connect(ac.destination);
+    src.start();
+  } catch(e){}
+}
+
+// ── INIT ──
+resizeCvs();
+window.addEventListener('resize', resizeCvs);
+loop();
+buildKeyboard();
+igUpdateDisplay();
+tryLoadFace();
+showSlide(0);
+startSlideLoop();
+console.log('CataMiner@s v17 READY');
 </script>
-
 </body>
 </html>
