@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <title>LED - CataMiner@s</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 body {
   margin:0;
@@ -54,29 +56,31 @@ img.active {
 </div>
 
 <script>
-const SUPABASE_URL = "https://tczmjvcqgscpeyivpbyd.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjem1qdmNxZ3NjcGV5aXZwYnlkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDM0MzMxMCwiZXhwIjoyMDk1OTE5MzEwfQ.JkfuUD6RCNM2BVg6t2jgfK5dJxTGLeMarBn2UXzA_aw";
+const supabaseUrl = "https://tczmjvcqgscpeyivpbyd.supabase.co";
+const supabaseKey = "PEGÁ_ACÁ_TU_ANON_KEY";
+
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 async function loadPhotos() {
-  const res = await fetch(
-    SUPABASE_URL + "/rest/v1/fotos_mineros?select=public_url&order=created_at.desc",
-    {
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: "Bearer " + SUPABASE_KEY
-      }
-    }
-  );
+  const { data, error } = await supabase
+    .from('fotos_mineros')
+    .select('public_url, created_at')
+    .order('created_at', { ascending: false })
+    .limit(100);
 
-  const data = await res.json();
+  if (error) {
+    console.error("SUPABASE ERROR:", error);
+    return;
+  }
 
   console.log("LED DATA:", data);
 
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  data.forEach(p => {
+  (data || []).forEach(p => {
     if (!p.public_url) return;
+
     const img = document.createElement("img");
     img.src = p.public_url;
     grid.appendChild(img);
@@ -96,6 +100,7 @@ function animate() {
 
 loadPhotos();
 setInterval(loadPhotos, 5000);
+setTimeout(animate, 2000);
 </script>
 
 </body>
