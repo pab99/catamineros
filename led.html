@@ -27,17 +27,12 @@ body {
   opacity: 0;
   transition: opacity 1s ease;
 }
-
-.slide.active {
-  opacity: 1;
-}
-
+.slide.active { opacity: 1; }
 .slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
 .slide .ig-label {
   position: absolute;
   bottom: 0;
@@ -52,7 +47,92 @@ body {
   letter-spacing: 1px;
 }
 
-/* ── QR ── */
+/* ── PANTALLA CTA ── */
+#cta-screen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1s ease;
+  pointer-events: none;
+  z-index: 50;
+  background: #1a0a00;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#cta-screen.active { opacity: 1; }
+
+#cta-screen .cta-bg-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#cta-screen .cta-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vh;
+}
+
+#cta-screen .cta-title {
+  font-family: 'Impact', 'Black Ops One', sans-serif;
+  font-size: 7vw;
+  color: #FFD700;
+  text-shadow: 0 0 40px rgba(255,180,0,0.5), 4px 4px 0 rgba(0,0,0,0.8);
+  line-height: 1.1;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+#cta-screen .cta-sub {
+  font-family: 'Impact', sans-serif;
+  font-size: 3.5vw;
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.9);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+#cta-screen .cta-qr-area {
+  display: flex;
+  align-items: center;
+  gap: 3vw;
+  margin-top: 1vh;
+}
+
+#cta-screen .cta-qr-box {
+  background: white;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 0 60px rgba(255,215,0,0.3);
+}
+
+#cta-screen .cta-qr-box img {
+  display: block;
+  width: 18vw;
+  height: 18vw;
+  min-width: 140px;
+  min-height: 140px;
+}
+
+#cta-screen .cta-arrow-text {
+  font-family: 'Impact', sans-serif;
+  font-size: 2.8vw;
+  color: #FFD700;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.9);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+/* ── QR fixed ── */
 #qr-panel {
   position: fixed;
   bottom: 24px;
@@ -67,13 +147,7 @@ body {
   box-shadow: 0 4px 24px rgba(0,0,0,0.6);
   z-index: 100;
 }
-
-#qr-panel img {
-  width: 160px;
-  height: 160px;
-  display: block;
-}
-
+#qr-panel img { width: 140px; height: 140px; display: block; }
 #qr-panel .qr-text {
   font-size: 11px;
   color: #333;
@@ -89,77 +163,244 @@ body {
   left: 14px;
   color: rgba(255,215,0,0.4);
   font-size: 12px;
-  z-index: 100;
-}
-
-/* ── EMPTY ── */
-#empty {
-  display: none;
-  position: fixed;
-  inset: 0;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255,215,0,0.3);
-  font-size: 2rem;
+  z-index: 200;
 }
 </style>
 </head>
-
 <body>
 
 <div id="carrousel"></div>
-<div id="empty">⛏️ Esperando fotos...</div>
 
+<!-- PANTALLA CTA -->
+<div id="cta-screen">
+
+  <!-- Fondo decorativo SVG -->
+  <svg class="cta-bg-svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- Fondo base oscuro cálido -->
+    <rect width="1920" height="1080" fill="#1a0a00"/>
+
+    <!-- Textura piso rocoso -->
+    <rect x="0" y="900" width="1920" height="180" fill="#2a1200"/>
+    <rect x="0" y="940" width="1920" height="8" fill="#3a1800" opacity="0.6"/>
+    <rect x="0" y="970" width="1920" height="6" fill="#3a1800" opacity="0.4"/>
+
+    <!-- Rieles del tren -->
+    <rect x="0" y="958" width="1920" height="12" fill="#5a3000" rx="4"/>
+    <rect x="0" y="990" width="1920" height="12" fill="#5a3000" rx="4"/>
+    <!-- Durmientes -->
+    <rect x="80" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="200" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="320" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="440" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="560" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="680" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="800" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="920" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="1040" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="1160" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="1280" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="1400" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="1520" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="1640" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="1760" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+    <rect x="1880" y="950" width="30" height="58" fill="#6a3800" rx="2"/>
+
+    <!-- Estrellas / partículas de oro -->
+    <circle cx="300" cy="80" r="3" fill="#FFD700" opacity="0.6"/>
+    <circle cx="700" cy="150" r="2" fill="#FFD700" opacity="0.4"/>
+    <circle cx="1100" cy="60" r="4" fill="#FFD700" opacity="0.5"/>
+    <circle cx="1500" cy="120" r="2" fill="#FFD700" opacity="0.7"/>
+    <circle cx="1750" cy="200" r="3" fill="#FFD700" opacity="0.4"/>
+    <circle cx="450" cy="300" r="2" fill="#FFD700" opacity="0.3"/>
+    <circle cx="1600" cy="350" r="3" fill="#FFD700" opacity="0.5"/>
+    <circle cx="900" cy="780" r="2" fill="#FFD700" opacity="0.3"/>
+    <circle cx="120" cy="600" r="2" fill="#FFD700" opacity="0.4"/>
+    <circle cx="1820" cy="700" r="3" fill="#FFD700" opacity="0.3"/>
+
+    <!-- === PICOS IZQUIERDA (decorativo) === -->
+    <!-- Pico grande izq -->
+    <g transform="translate(60, 820) rotate(-30)">
+      <!-- mango -->
+      <rect x="-8" y="0" width="16" height="120" rx="6" fill="#8B4513"/>
+      <!-- cabeza pico -->
+      <path d="M-24 -8 L0 -55 L24 -8 L8 -8 L8 0 L-8 0 L-8 -8 Z" fill="#888" stroke="#555" stroke-width="2"/>
+      <path d="M0 -55 L24 -8 L8 -8 Z" fill="#aaa"/>
+      <!-- punta izq larga -->
+      <path d="M-24 -8 L-70 -5 L-24 2 Z" fill="#999" stroke="#555" stroke-width="1.5"/>
+    </g>
+
+    <!-- Pico mediano izq -->
+    <g transform="translate(160, 840) rotate(15)">
+      <rect x="-6" y="0" width="12" height="90" rx="5" fill="#6B3410"/>
+      <path d="M-18 -6 L0 -40 L18 -6 L6 -6 L6 0 L-6 0 L-6 -6 Z" fill="#777" stroke="#444" stroke-width="2"/>
+      <path d="M0 -40 L18 -6 L6 -6 Z" fill="#999"/>
+      <path d="M-18 -6 L-52 -4 L-18 2 Z" fill="#888" stroke="#444" stroke-width="1.5"/>
+    </g>
+
+    <!-- === PICOS DERECHA === -->
+    <g transform="translate(1750, 830) rotate(20)">
+      <rect x="-8" y="0" width="16" height="110" rx="6" fill="#8B4513"/>
+      <path d="M-22 -8 L0 -52 L22 -8 L7 -8 L7 0 L-7 0 L-7 -8 Z" fill="#888" stroke="#555" stroke-width="2"/>
+      <path d="M0 -52 L22 -8 L7 -8 Z" fill="#aaa"/>
+      <path d="M22 -8 L66 -5 L22 2 Z" fill="#999" stroke="#555" stroke-width="1.5"/>
+    </g>
+
+    <g transform="translate(1860, 850) rotate(-10)">
+      <rect x="-6" y="0" width="12" height="80" rx="5" fill="#6B3410"/>
+      <path d="M-16 -6 L0 -38 L16 -6 L5 -6 L5 0 L-5 0 L-5 -6 Z" fill="#777" stroke="#444" stroke-width="2"/>
+      <path d="M0 -38 L16 -6 L5 -6 Z" fill="#999"/>
+      <path d="M16 -6 L48 -3 L16 2 Z" fill="#888" stroke="#444" stroke-width="1.5"/>
+    </g>
+
+    <!-- === CARRITO MINERO IZQUIERDA === -->
+    <g transform="translate(180, 900)">
+      <!-- cuerpo -->
+      <path d="M0 -60 L10 0 L120 0 L130 -60 Z" fill="#8B3A0F" stroke="#5a2000" stroke-width="2"/>
+      <!-- borde superior azul -->
+      <rect x="-2" y="-68" width="134" height="14" rx="4" fill="#4a45b8" stroke="#2a2580" stroke-width="1.5"/>
+      <!-- pepitas de oro -->
+      <ellipse cx="30" cy="-80" rx="18" ry="12" fill="#FFD700"/>
+      <ellipse cx="55" cy="-90" rx="22" ry="14" fill="#FFB800"/>
+      <ellipse cx="80" cy="-82" rx="16" ry="11" fill="#FFD700"/>
+      <ellipse cx="100" cy="-88" rx="14" ry="10" fill="#FFEA00"/>
+      <!-- rayas decorativas -->
+      <line x1="30" y1="-45" x2="100" y2="-45" stroke="#6a2800" stroke-width="2.5"/>
+      <line x1="28" y1="-32" x2="102" y2="-32" stroke="#6a2800" stroke-width="2.5"/>
+      <!-- chasis -->
+      <rect x="-10" y="0" width="150" height="14" rx="4" fill="#b0b8d0"/>
+      <!-- ruedas -->
+      <circle cx="20" cy="18" r="18" fill="#555" stroke="#333" stroke-width="3"/>
+      <circle cx="20" cy="18" r="8" fill="#777"/>
+      <circle cx="110" cy="18" r="18" fill="#555" stroke="#333" stroke-width="3"/>
+      <circle cx="110" cy="18" r="8" fill="#777"/>
+      <!-- gancho -->
+      <rect x="-26" y="2" width="18" height="8" rx="3" fill="#FFD700"/>
+      <circle cx="-30" cy="6" r="8" fill="none" stroke="#FFD700" stroke-width="4"/>
+    </g>
+
+    <!-- === CARRITO MINERO DERECHA === -->
+    <g transform="translate(1550, 910)">
+      <path d="M0 -55 L10 0 L110 0 L120 -55 Z" fill="#8B3A0F" stroke="#5a2000" stroke-width="2"/>
+      <rect x="-2" y="-63" width="124" height="13" rx="4" fill="#4a45b8" stroke="#2a2580" stroke-width="1.5"/>
+      <ellipse cx="28" cy="-74" rx="16" ry="11" fill="#FFD700"/>
+      <ellipse cx="50" cy="-82" rx="20" ry="13" fill="#FFB800"/>
+      <ellipse cx="74" cy="-76" rx="15" ry="10" fill="#FFD700"/>
+      <ellipse cx="94" cy="-81" rx="13" ry="9" fill="#FFEA00"/>
+      <line x1="28" y1="-42" x2="94" y2="-42" stroke="#6a2800" stroke-width="2.5"/>
+      <line x1="26" y1="-30" x2="96" y2="-30" stroke="#6a2800" stroke-width="2.5"/>
+      <rect x="-8" y="0" width="136" height="13" rx="4" fill="#b0b8d0"/>
+      <circle cx="18" cy="17" r="16" fill="#555" stroke="#333" stroke-width="3"/>
+      <circle cx="18" cy="17" r="7" fill="#777"/>
+      <circle cx="102" cy="17" r="16" fill="#555" stroke="#333" stroke-width="3"/>
+      <circle cx="102" cy="17" r="7" fill="#777"/>
+      <rect x="120" y="2" width="16" height="7" rx="3" fill="#FFD700"/>
+      <circle cx="140" cy="5.5" r="7" fill="none" stroke="#FFD700" stroke-width="3.5"/>
+    </g>
+
+    <!-- === LLAMA SVG - lado derecho, grande === -->
+    <g transform="translate(1300, 150) scale(1.6)" opacity="0.9">
+      <!-- Cuerpo llama (silueta negra -> la convertimos a color dorado/ocre) -->
+      <!-- Cuerpo principal -->
+      <path d="M80 420 C40 420 10 380 15 330 C10 280 20 240 40 200 C30 180 35 150 50 130 C60 110 80 100 100 110 C110 85 130 70 155 75 C170 60 190 55 210 65 C230 50 255 55 265 75 C285 70 300 85 295 110 C310 105 325 115 325 135 C335 155 330 180 315 195 C330 235 335 275 325 325 C328 375 300 415 260 420 Z"
+        fill="#c8860a"/>
+      <!-- Pelaje irregular (bordes rasgados) -->
+      <path d="M80 420 C60 410 45 395 40 370 L50 375 C42 350 38 320 42 290 L52 300 C48 270 52 245 62 220 L70 232 C62 215 65 195 75 180 L82 192 C78 175 84 158 96 145 L98 158 C95 142 106 128 120 122 L118 136 C128 118 144 108 162 110 L158 124 C172 108 190 103 208 108 L204 120 C218 106 238 103 252 110 L248 123 C262 110 278 112 285 128 L280 136 C290 124 302 126 308 140 L302 146 C312 140 318 152 314 166 L308 162 C314 176 308 192 298 202 L292 194 C300 210 302 230 298 250 L290 242 C294 262 292 282 285 300 L278 290 C280 312 276 335 268 355 L260 344 C260 368 252 390 238 406 Z"
+        fill="#e8a020" opacity="0.6"/>
+      <!-- Hocico blanco -->
+      <ellipse cx="190" cy="220" rx="45" ry="55" fill="#fff5e0"/>
+      <!-- Ojo derecho -->
+      <circle cx="160" cy="180" r="20" fill="white"/>
+      <circle cx="162" cy="182" r="10" fill="#3a2000"/>
+      <circle cx="166" cy="178" r="3" fill="white"/>
+      <!-- Ojo izquierdo -->
+      <circle cx="220" cy="180" r="20" fill="white"/>
+      <circle cx="222" cy="182" r="10" fill="#3a2000"/>
+      <circle cx="226" cy="178" r="3" fill="white"/>
+      <!-- Nariz en Y -->
+      <path d="M185 235 L190 250 L195 235 M190 250 L190 265" stroke="#8B4513" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <!-- Sonrisa -->
+      <path d="M175 278 Q190 292 205 278" stroke="#8B4513" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <!-- Oreja izquierda -->
+      <path d="M138 115 C130 80 145 50 165 45 C155 70 160 95 162 115 Z" fill="#c8860a"/>
+      <path d="M140 112 C134 85 146 62 162 58 C154 78 157 98 158 112 Z" fill="#a06808"/>
+      <!-- Oreja derecha -->
+      <path d="M218 112 C220 90 232 68 248 65 C244 88 240 105 238 115 Z" fill="#c8860a"/>
+      <!-- Pelaje cabeza -->
+      <path d="M138 115 C120 130 108 148 110 168 C118 155 132 145 148 140 Z" fill="#d09018" opacity="0.8"/>
+      <path d="M238 115 C255 128 266 146 262 168 C254 154 240 144 225 140 Z" fill="#d09018" opacity="0.8"/>
+    </g>
+
+    <!-- Texto decorativo fondo tipo stamped -->
+    <text x="960" y="920" text-anchor="middle" font-family="Impact, sans-serif" font-size="48" fill="#3a1800" opacity="0.4" letter-spacing="20">⛏ ⛏ ⛏ ⛏ ⛏ ⛏ ⛏ ⛏ ⛏ ⛏ ⛏ ⛏ ⛏ ⛏ ⛏</text>
+
+  </svg>
+
+  <!-- Contenido principal -->
+  <div class="cta-content">
+    <div class="cta-title">⛏️ &nbsp;DESCARGÁ&nbsp; ⛏️</div>
+    <div class="cta-title" style="font-size:5.5vw; color:#fff;">TU FOTO MINERA</div>
+    <div class="cta-sub" style="color: #FFD700;">¡Escaneá el QR y encontrala!</div>
+
+    <div class="cta-qr-area">
+      <div class="cta-arrow-text">📸<br>HACÉ<br>CLICK<br>→</div>
+      <div class="cta-qr-box">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=https://catamineros.onrender.com/mi-foto.html" alt="QR" />
+      </div>
+      <div class="cta-arrow-text" style="text-align:left;">←<br>ESCaNEÁ<br>Y<br>LISTO</div>
+    </div>
+
+    <div class="cta-sub" style="font-size:2vw; color:#ccc; letter-spacing:2px;">catamineros.onrender.com/mi-foto.html</div>
+  </div>
+
+</div>
+
+<!-- QR fijo -->
 <div id="qr-panel">
-  <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://catamineros.onrender.com/mi-foto.html" alt="QR" />
+  <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=https://catamineros.onrender.com/mi-foto.html" alt="QR" />
   <div class="qr-text">Escaneá y<br>encontrá tu foto</div>
 </div>
 
 <div id="status">—</div>
 
 <script>
+const CTA_EVERY = 5;
+const SLIDE_DURATION = 4000;
+const CTA_DURATION = 8000;
+
 let fotos = [];
 let current = 0;
 let slides = [];
+let photoCount = 0;
 let timer = null;
+let ctaTimer = null;
+let inCTA = false;
 
 const carrousel = document.getElementById('carrousel');
-const empty = document.getElementById('empty');
+const ctaScreen = document.getElementById('cta-screen');
 const status = document.getElementById('status');
 
 function buildSlides(data) {
-  // Detectar si cambió la lista
   const urls = data.map(f => f.public_url).join(',');
   const prevUrls = fotos.map(f => f.public_url).join(',');
-  if (urls === prevUrls) return; // sin cambios
+  if (urls === prevUrls) return;
 
   fotos = data;
-
-  // Limpiar slides viejos
   slides.forEach(s => s.remove());
   slides = [];
   if (timer) clearInterval(timer);
+  if (ctaTimer) clearTimeout(ctaTimer);
 
-  if (fotos.length === 0) {
-    empty.style.display = 'flex';
-    return;
-  }
-  empty.style.display = 'none';
+  if (fotos.length === 0) return;
 
   fotos.forEach((f, i) => {
     const div = document.createElement('div');
     div.className = 'slide' + (i === 0 ? ' active' : '');
-
     const img = document.createElement('img');
     img.src = f.public_url;
-    img.alt = '';
-
     const label = document.createElement('div');
     label.className = 'ig-label';
-    label.textContent = f.usuario_ig && f.usuario_ig !== 'sin_usuario'
-      ? '@' + f.usuario_ig
-      : '';
-
+    label.textContent = f.usuario_ig && f.usuario_ig !== 'sin_usuario' ? '@' + f.usuario_ig : '';
     div.appendChild(img);
     div.appendChild(label);
     carrousel.appendChild(div);
@@ -167,14 +408,39 @@ function buildSlides(data) {
   });
 
   current = 0;
-  timer = setInterval(next, 4000);
+  photoCount = 0;
+  scheduleNext();
 }
 
-function next() {
+function scheduleNext() {
+  timer = setTimeout(() => {
+    if (inCTA) return;
+    photoCount++;
+    if (photoCount > 0 && photoCount % CTA_EVERY === 0) {
+      showCTA();
+    } else {
+      nextSlide();
+      scheduleNext();
+    }
+  }, SLIDE_DURATION);
+}
+
+function nextSlide() {
   if (slides.length < 2) return;
   slides[current].classList.remove('active');
   current = (current + 1) % slides.length;
   slides[current].classList.add('active');
+}
+
+function showCTA() {
+  inCTA = true;
+  ctaScreen.classList.add('active');
+  ctaTimer = setTimeout(() => {
+    ctaScreen.classList.remove('active');
+    inCTA = false;
+    nextSlide();
+    scheduleNext();
+  }, CTA_DURATION);
 }
 
 async function load() {
@@ -184,14 +450,11 @@ async function load() {
     if (!json.ok) return;
     buildSlides(json.fotos || []);
     status.textContent = (json.fotos?.length || 0) + ' fotos · ' + new Date().toLocaleTimeString();
-  } catch (e) {
-    console.error(e);
-  }
+  } catch(e) { console.error(e); }
 }
 
 load();
 setInterval(load, 5000);
 </script>
-
 </body>
 </html>
