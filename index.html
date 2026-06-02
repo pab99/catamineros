@@ -268,7 +268,7 @@
     <div class="slide active" id="slide-1">
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
-      <img src="assets/logo_catamarca_gobierno.png" style="height:150px;opacity:0.92;filter:brightness(0) invert(1);margin-bottom:20px;" alt="Catamarca Gobierno">
+      <img src="assets/logo_catamarca_gobierno.png" style="height:72px;opacity:0.92;filter:brightness(0) invert(1);margin-bottom:20px;" alt="Catamarca Gobierno">
       <div class="s-title">⛏️ CATA<br>MINER@S ⛏️</div>
       <div class="s-year">CATAMARCA 2026</div>
       <div class="s-desc">Sacate una foto de minero y llevala de recuerdo del evento</div>
@@ -452,7 +452,6 @@ var lastAngle         = 0;   // radianes, inclinación de la cabeza
 var photoUrl          = '';
 var faceReady         = false;
 var detecting         = false;
-var detectSession     = 0;
 var sessionPhotos     = [];
 var countdownCancel   = null;
 var registerTimerRef  = null;
@@ -469,7 +468,6 @@ function goAttract(){
   cancelCountdown();
   hideOverlay();
   hideCaptureBtn();
-  video.style.visibility='visible';
   igHandle = ''; igValue = ''; lastFace = null; captureTriggered = false;
   igUpdateDisplay();
   go('screen-attract');
@@ -650,28 +648,29 @@ function tryLoadFace(){
     .catch(function(e){ console.warn('face-api:',e); });
 }
 function startDetect(){
-  if(!faceReady) return;
-  detecting = false; // forzar reinicio limpio
-  detecting = true;
-  var sessionId = ++detectSession; // cada sesión tiene su propio ID
+  if(detecting||!faceReady) return;
+  detecting=true;
   (function tick(){
-    if(!detecting || detectSession !== sessionId) return; // sesión vieja → morir
+    if(!detecting) return;
     faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({inputSize:224,scoreThreshold:0.5}))
       .withFaceLandmarks(true)
       .then(function(d){
-        if(detectSession !== sessionId) return;
         if(d){
           lastFace=d.detection;
+          // Calcular ángulo por posición de ojos
           var lm=d.landmarks.positions;
-          var lEye=lm[39], rEye=lm[42];
-          var dx=rEye.x-lEye.x, dy=rEye.y-lEye.y;
-          lastAngle = -Math.atan2(dy, dx);
+          // Ojo izquierdo: puntos 36-41, ojo derecho: 42-47 (en coordenadas de video sin espejo)
+          var lEye=lm[39]; // esquina exterior ojo izquierdo
+          var rEye=lm[42]; // esquina exterior ojo derecho
+          var dx=rEye.x - lEye.x;
+          var dy=rEye.y - lEye.y;
+          lastAngle = -Math.atan2(dy, dx); // negado porque el video está espejado en CSS
         } else {
           lastFace=null; lastAngle=0;
         }
       })
-      .catch(function(){ lastFace=null; })
-      .finally(function(){ setTimeout(tick, 100); });
+      .catch(function(){})
+      .finally(function(){ setTimeout(tick,100); });
   })();
 }
 
@@ -757,27 +756,6 @@ function renderOverlayOnto(c, W, H, ig){
     c.fillText('💎  '+handle+'  💎', W/2, bY+bH/2);
   }
 
-  // óvalo guía — siempre visible para posicionar la cara
-  (function drawOval(){
-    var oX = W/2, oY = H*0.48;
-    var oRx = W*0.13, oRy = H*0.28;
-    c.save();
-    c.strokeStyle = lastFace ? 'rgba(255,215,0,0.35)' : 'rgba(255,215,0,0.75)';
-    c.lineWidth = 3;
-    c.setLineDash([14,10]);
-    c.beginPath();
-    c.ellipse(oX, oY, oRx, oRy, 0, 0, Math.PI*2);
-    c.stroke();
-    c.setLineDash([]);
-    if(!lastFace){
-      c.fillStyle='rgba(255,215,0,0.85)';
-      c.font='bold '+Math.round(W*0.02)+"px 'Oswald',sans-serif";
-      c.textAlign='center'; c.textBaseline='top';
-      c.fillText('⬆  PONÉ TU CARA AQUÍ  ⬆', oX, oY+oRy+14);
-    }
-    c.restore();
-  })();
-
   // helmet
   if(lastFace && lastFace.box){
     var vW=video.videoWidth||W, vH=video.videoHeight||H;
@@ -785,7 +763,7 @@ function renderOverlayOnto(c, W, H, ig){
     var fX2=(vW-lastFace.box.x-lastFace.box.width)*scaleX;
     var fY2=lastFace.box.y*(H/vH);
     var fW2=lastFace.box.width*scaleX;
-    drawMinerHelmet(c, fX2+fW2/2, fY2 - fW2*0.27, fW2*0.5, lastAngle);
+    drawMinerHelmet(c, fX2+fW2/2, fY2 + fW2*0.10, fW2*0.5, lastAngle);
   }
 }
 
@@ -799,16 +777,16 @@ function doCapture(){
   photoUrl=capture(igHandle);
   sessionPhotos.push(photoUrl);
 
-  // Flash blanco — ocultar video Y overlay para que no se vea el video crudo
-  hideOverlay();
-  video.style.visibility='hidden';
+  // Flash visual
   var fl=document.createElement('div');
-  Object.assign(fl.style,{position:'fixed',inset:'0',background:'#fff',zIndex:'200',pointerEvents:'none',animation:'flashOut .4s ease forwards'});
+  Object.assign(fl.style,{position:'fixed',inset:'0',background:'#fff',zIndex:'200',pointerEvents:'none',animation:'flashOut .5s ease forwards'});
   document.body.appendChild(fl);
+  setTimeout(function(){ fl.remove(); },600);
+
+  hideOverlay();
   setTimeout(function(){
-    fl.remove();
     showGallery();
-  },400);
+  },350);
 }
 
 // ── REGISTER TIMER ──
@@ -879,34 +857,14 @@ function buildKeyboard(){
 
 // ── GALLERY ──
 function silentDownload(dataUrl, filename){
-  fetch('/save-photo', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-   body: JSON.stringify({
-  dataUrl: dataUrl,
-  filename: filename,
-  ig: igHandle   // 👈 NUEVO: usuario de Instagram
-})
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(j){
-    console.log('Foto guardada:', j.file);
-    if(j.publicUrl){
-      photoUrl = j.publicUrl;
-      buildGallery();
-    }
-  })
-  .catch(function(e){
-    console.warn('POST /save-photo falló, usando descarga directa:', e);
-    try {
-      var a=document.createElement('a');
-      a.href=dataUrl; a.download=filename;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(function(){ a.remove(); },500);
-    } catch(e2){}
-  });
+  try {
+    var a=document.createElement('a');
+    a.href=dataUrl; a.download=filename; a.style.display='none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ a.remove(); },500);
+  } catch(e){ console.warn('download error:',e); }
 }
+
 function showGallery(){
   silentDownload(photoUrl,'cataminers_'+Date.now()+'.jpg');
   buildGallery();
