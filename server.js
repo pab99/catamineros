@@ -122,9 +122,7 @@ const server = http.createServer(function (req, res) {
 
         const buf = Buffer.from(b64, 'base64');
 
-        const fname =
-          (obj.filename || generarNombreInstagram())
-            .replace(/[^a-zA-Z0-9._-]/g, '_');
+        const fname = generarNombreInstagram();
 
         fs.writeFile(
           path.join(PHOTOS, fname),
