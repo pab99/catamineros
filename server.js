@@ -42,22 +42,14 @@ async function uploadToSupabase(buffer, filename) {
     const { error } =
       await supabase.storage
         .from('fotos')
-        .upload(
-          remotePath,
-          buffer,
-          {
-            contentType: 'image/jpeg',
-            upsert: true
-          }
-        );
+        .upload(remotePath, buffer, {
+          contentType: 'image/jpeg',
+          upsert: true
+        });
 
     if (error) {
 
-      console.error(
-        'Supabase upload error:',
-        error.message
-      );
-
+      console.error('Supabase upload error:', error.message);
       return null;
     }
 
@@ -75,43 +67,43 @@ async function uploadToSupabase(buffer, filename) {
 
   } catch (err) {
 
-    console.error(
-      'Supabase exception:',
-      err
-    );
-
+    console.error('Supabase exception:', err);
     return null;
   }
 }
 
+function generarNombreInstagram() {
+
+  const now = new Date();
+
+  const pad = (n) => String(n).padStart(2, '0');
+
+  const fecha =
+    now.getFullYear() +
+    pad(now.getMonth() + 1) +
+    pad(now.getDate());
+
+  const hora =
+    pad(now.getHours()) +
+    pad(now.getMinutes()) +
+    pad(now.getSeconds());
+
+  return `instagram_${fecha}_${hora}.jpeg`;
+}
+
 const server = http.createServer(function (req, res) {
 
-  res.setHeader(
-    'Access-Control-Allow-Origin',
-    '*'
-  );
-
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET,POST,OPTIONS'
-  );
-
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Content-Type'
-  );
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
-
     res.writeHead(204);
     res.end();
     return;
   }
 
-  if (
-    req.method === 'POST' &&
-    req.url === '/save-photo'
-  ) {
+  if (req.method === 'POST' && req.url === '/save-photo') {
 
     let body = '';
 
@@ -126,26 +118,13 @@ const server = http.createServer(function (req, res) {
         const obj = JSON.parse(body);
 
         const b64 =
-          obj.dataUrl.replace(
-            /^data:image\/\w+;base64,/,
-            ''
-          );
+          obj.dataUrl.replace(/^data:image\/\w+;base64,/, '');
 
-        const buf =
-          Buffer.from(
-            b64,
-            'base64'
-          );
+        const buf = Buffer.from(b64, 'base64');
 
         const fname =
-          (
-            obj.filename ||
-            ('foto_' + Date.now() + '.jpg')
-          )
-          .replace(
-            /[^a-zA-Z0-9._-]/g,
-            '_'
-          );
+          (obj.filename || generarNombreInstagram())
+            .replace(/[^a-zA-Z0-9._-]/g, '_');
 
         fs.writeFile(
           path.join(PHOTOS, fname),
@@ -157,41 +136,26 @@ const server = http.createServer(function (req, res) {
               console.error(err);
 
               res.writeHead(500);
-
-              res.end(
-                JSON.stringify({
-                  ok: false,
-                  error: 'write error'
-                })
-              );
+              res.end(JSON.stringify({
+                ok: false,
+                error: 'write error'
+              }));
 
               return;
             }
 
-            console.log(
-              'Foto guardada: fotos/' +
-              fname
-            );
+            console.log('Foto guardada: fotos/' + fname);
 
-            res.writeHead(
-              200,
-              {
-                'Content-Type':
-                  'application/json'
-              }
-            );
+            res.writeHead(200, {
+              'Content-Type': 'application/json'
+            });
 
-            res.end(
-              JSON.stringify({
-                ok: true,
-                file: 'fotos/' + fname
-              })
-            );
+            res.end(JSON.stringify({
+              ok: true,
+              file: 'fotos/' + fname
+            }));
 
-            uploadToSupabase(
-              buf,
-              fname
-            );
+            uploadToSupabase(buf, fname);
           }
         );
 
@@ -200,101 +164,64 @@ const server = http.createServer(function (req, res) {
         console.error(e);
 
         res.writeHead(400);
-
-        res.end(
-          JSON.stringify({
-            ok: false,
-            error: 'bad request'
-          })
-        );
+        res.end(JSON.stringify({
+          ok: false,
+          error: 'bad request'
+        }));
       }
     });
 
     return;
   }
 
-  let parsed =
-    url.parse(req.url).pathname;
+  let parsed = url.parse(req.url).pathname;
 
   if (parsed === '/') {
     parsed = '/index.html';
   }
 
-  const filepath =
-    path.join(
-      __dirname,
-      parsed
-    );
+  const filepath = path.join(__dirname, parsed);
 
-  fs.readFile(
-    filepath,
-    function (err, data) {
+  fs.readFile(filepath, function (err, data) {
 
-      if (err) {
-
-        res.writeHead(404);
-
-        res.end('Not found');
-
-        return;
-      }
-
-      const ext =
-        path.extname(filepath)
-          .toLowerCase();
-
-      const mime =
-        MIME[ext] ||
-        'application/octet-stream';
-
-      res.writeHead(
-        200,
-        {
-          'Content-Type': mime
-        }
-      );
-
-      res.end(data);
+    if (err) {
+      res.writeHead(404);
+      res.end('Not found');
+      return;
     }
-  );
+
+    const ext = path.extname(filepath).toLowerCase();
+    const mime = MIME[ext] || 'application/octet-stream';
+
+    res.writeHead(200, {
+      'Content-Type': mime
+    });
+
+    res.end(data);
+  });
 
 });
 
 server.listen(PORT, function () {
 
   console.log('');
-  console.log(
-    '⛏️ CataMiner@s servidor listo'
-  );
-  console.log(
-    '→ Puerto: ' + PORT
-  );
-  console.log(
-    '→ Fotos locales: /fotos'
-  );
-  console.log(
-    '→ Supabase conectado'
-  );
+  console.log('⛏️ CataMiner@s servidor listo');
+  console.log('→ Puerto: ' + PORT);
+  console.log('→ Fotos locales: /fotos');
+  console.log('→ Supabase conectado');
   console.log('');
 });
 
-process.on(
-  'uncaughtException',
-  function (err) {
+process.on('uncaughtException', function (err) {
 
-    if (
-      err.code === 'EADDRINUSE'
-    ) {
+  if (err.code === 'EADDRINUSE') {
 
-      console.error('');
-      console.error(
-        'ERROR: puerto ocupado'
-      );
-      console.error('');
+    console.error('');
+    console.error('ERROR: puerto ocupado');
+    console.error('');
 
-      process.exit(1);
-    }
-
-    throw err;
+    process.exit(1);
   }
-);
+
+  throw err;
+});
