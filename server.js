@@ -122,7 +122,7 @@ const server = http.createServer(function (req, res) {
 
         const buf = Buffer.from(b64, 'base64');
 
-        const fname = generarNombreInstagram();
+        const fname = generarNombreInstagram(obj.usuario || 'instagram');
 
         fs.writeFile(
           path.join(PHOTOS, fname),
@@ -209,6 +209,25 @@ server.listen(PORT, function () {
   console.log('→ Supabase conectado');
   console.log('');
 });
+
+function generarNombreInstagram(usuario = 'instagram') {
+
+  const now = new Date();
+
+  const pad = (n) => String(n).padStart(2, '0');
+
+  const fecha =
+    now.getFullYear() +
+    pad(now.getMonth() + 1) +
+    pad(now.getDate());
+
+  const hora =
+    pad(now.getHours()) +
+    pad(now.getMinutes()) +
+    pad(now.getSeconds());
+
+  return `${fecha}_${hora}_${usuario}.jpeg`;
+}
 
 process.on('uncaughtException', function (err) {
 
