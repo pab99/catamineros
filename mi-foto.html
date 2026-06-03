@@ -24,7 +24,7 @@ header {
   justify-content: center;
 }
 header img {
-  height: 56px;
+  height: 90px;
 }
 
 main {
@@ -224,19 +224,38 @@ async function buscar() {
       btnDown.style.cssText = 'padding:10px 16px;background:#FFD700;color:#000;font-weight:bold;font-size:14px;border-radius:8px;text-decoration:none;white-space:nowrap;';
       btnDown.addEventListener('click', () => registrarDescarga(f.public_url, ig));
 
-      // Eliminar (falso borrado) con confirmación dos pasos
+      btnRow.appendChild(btnDown);
+
+      // Compartir
+      if (typeof navigator.share === 'function') {
+        const btnShare = document.createElement('button');
+        btnShare.textContent = '↗ Compartir';
+        btnShare.style.cssText = 'padding:10px 16px;background:#222;color:#FFD700;font-weight:bold;font-size:14px;border-radius:8px;border:2px solid #FFD700;cursor:pointer;white-space:nowrap;';
+        btnShare.addEventListener('click', async () => {
+          try {
+            const resp = await fetch(f.public_url);
+            const blob = await resp.blob();
+            const file = new File([blob], 'foto-minera.jpg', { type: 'image/jpeg' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({ title: '⛏️ Mi Foto Minera', text: '¡Mirá mi foto minera!', files: [file] });
+            } else {
+              await navigator.share({ title: '⛏️ Mi Foto Minera', text: '¡Mirá mi foto minera!', url: f.public_url });
+            }
+          } catch(e) { if (e.name !== 'AbortError') console.error(e); }
+        });
+        btnRow.appendChild(btnShare);
+      }
+
+      // Eliminar
       const btnDel = document.createElement('button');
       btnDel.textContent = '🗑 Eliminar';
       btnDel.style.cssText = 'padding:10px 16px;background:transparent;color:#888;font-size:14px;border-radius:8px;border:1px solid #444;cursor:pointer;white-space:nowrap;';
-
       let confirmando = false;
       btnDel.addEventListener('click', async () => {
         if (!confirmando) {
-          // Primer click — pedir confirmación
           confirmando = true;
-          btnDel.textContent = '⚠️ ¿Confirmar? No se puede deshacer';
-          btnDel.style.cssText = 'padding:12px 20px;background:#500;color:#fff;font-size:14px;border-radius:8px;border:2px solid #f00;cursor:pointer;';
-          // Auto-cancelar si no confirma en 5s
+          btnDel.textContent = '¿Confirmar borrado?';
+          btnDel.style.cssText = 'padding:10px 16px;background:#500;color:#fff;font-size:13px;border-radius:8px;border:2px solid #f00;cursor:pointer;white-space:nowrap;';
           setTimeout(() => {
             if (confirmando) {
               confirmando = false;
@@ -245,7 +264,6 @@ async function buscar() {
             }
           }, 5000);
         } else {
-          // Segundo click — ejecutar
           btnDel.textContent = '...';
           btnDel.disabled = true;
           try {
@@ -258,50 +276,13 @@ async function buscar() {
             if (j.ok) {
               wrap.innerHTML = '<p style="color:#888;font-size:14px;padding:20px;">✓ Foto eliminada.</p>';
             } else {
-              btnDel.textContent = 'Error, intentá de nuevo';
-              btnDel.disabled = false;
+              btnDel.textContent = '🗑 Eliminar'; btnDel.disabled = false;
             }
           } catch(e) {
-            btnDel.textContent = 'Error de conexión';
-            btnDel.disabled = false;
+            btnDel.textContent = '🗑 Eliminar'; btnDel.disabled = false;
           }
         }
       });
-
-      btnRow.appendChild(btnDown);
-
-      // Compartir (Web Share API)
-      if (navigator.share) {
-        const btnShare = document.createElement('button');
-        btnShare.textContent = '↗ Compartir';
-        btnShare.style.cssText = 'padding:10px 16px;background:#222;color:#FFD700;font-weight:bold;font-size:14px;border-radius:8px;border:2px solid #FFD700;cursor:pointer;white-space:nowrap;';
-        btnShare.addEventListener('click', async () => {
-          try {
-            // Intentar compartir el archivo directo
-            const resp = await fetch(f.public_url);
-            const blob = await resp.blob();
-            const file = new File([blob], 'foto-minera.jpg', { type: 'image/jpeg' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              await navigator.share({
-                title: '⛏️ Mi Foto Minera - CataMiner@s 2026',
-                text: '¡Mirá mi foto en el PhotoBooth minero de Catamarca!',
-                files: [file]
-              });
-            } else {
-              // Fallback: compartir solo el link
-              await navigator.share({
-                title: '⛏️ Mi Foto Minera - CataMiner@s 2026',
-                text: '¡Mirá mi foto en el PhotoBooth minero de Catamarca!',
-                url: f.public_url
-              });
-            }
-          } catch(e) {
-            if (e.name !== 'AbortError') console.error('Share error:', e);
-          }
-        });
-        btnRow.appendChild(btnShare);
-      }
-
       btnRow.appendChild(btnDel);
 
       wrap.appendChild(img);
