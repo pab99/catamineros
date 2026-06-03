@@ -269,7 +269,6 @@ async function buscar() {
       });
 
       btnRow.appendChild(btnDown);
-      if (navigator.share) { btnRow.appendChild(btnShare); }
 
       // Compartir (Web Share API)
       if (navigator.share) {
@@ -300,6 +299,7 @@ async function buscar() {
             if (e.name !== 'AbortError') console.error('Share error:', e);
           }
         });
+        btnRow.appendChild(btnShare);
       }
 
       btnRow.appendChild(btnDel);
