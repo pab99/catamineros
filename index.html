@@ -438,31 +438,51 @@ var saveBtn       = document.getElementById('save-btn');
 var btnCapture    = document.getElementById('btn-capture');
 var timerSecsEl   = document.getElementById('timer-secs');
 
-// ── TUNNEL JPG con chroma-key ──
-var tunnelImg = null;
-var tunnelReady = false;
-(function(){
+// ── TUNNEL JPG con chroma-key — dual orientación ──
+var tunnelImg        = null;
+var tunnelReady      = false;
+var tunnelCurrentSrc = '';
+
+function applyChroma(img){
+  var tmp = document.createElement('canvas');
+  tmp.width = img.naturalWidth; tmp.height = img.naturalHeight;
+  var tc = tmp.getContext('2d');
+  tc.drawImage(img, 0, 0);
+  var id = tc.getImageData(0, 0, tmp.width, tmp.height);
+  var d = id.data;
+  for(var i=0; i<d.length; i+=4){
+    var r=d[i], g=d[i+1], b=d[i+2];
+    if(g > 100 && g > r * 1.35 && g > b * 1.35){ d[i+3]=0; }
+  }
+  tc.putImageData(id, 0, 0);
+  return tmp;
+}
+
+function getTunnelSrc(){
+  return window.innerHeight > window.innerWidth
+    ? 'assets/tunel_vertical.jpg'
+    : 'assets/tunel.jpg';
+}
+
+function loadTunnel(){
+  var src = getTunnelSrc();
+  if(src === tunnelCurrentSrc) return;
+  tunnelReady = false;
+  tunnelCurrentSrc = src;
   var img = new Image();
   img.crossOrigin = 'anonymous';
   img.onload = function(){
-    var tmp = document.createElement('canvas');
-    tmp.width = img.naturalWidth; tmp.height = img.naturalHeight;
-    var tc = tmp.getContext('2d');
-    tc.drawImage(img, 0, 0);
-    var id = tc.getImageData(0, 0, tmp.width, tmp.height);
-    var d = id.data;
-    for(var i=0; i<d.length; i+=4){
-      var r=d[i], g=d[i+1], b=d[i+2];
-      if(g > 100 && g > r * 1.35 && g > b * 1.35){ d[i+3]=0; }
-    }
-    tc.putImageData(id, 0, 0);
-    tunnelImg = tmp;
+    tunnelImg   = applyChroma(img);
     tunnelReady = true;
-    console.log('tunel.jpg cargado OK, chroma-key aplicado');
+    console.log('Tunel cargado:', src);
   };
-  img.onerror = function(){ console.warn('ERROR cargando tunel.jpg'); };
-  img.src = 'assets/tunel_vertical.jpg';
-})();
+  img.onerror = function(){ console.warn('ERROR cargando tunel:', src); };
+  img.src = src;
+}
+
+loadTunnel();
+window.addEventListener('resize', loadTunnel);
+
 
 var logoImg = new Image();
 var logoReady = false;
@@ -788,14 +808,7 @@ function renderOverlayOnto(c, W, H, ig){
     c.beginPath(); c.moveTo(pt[0]+pt[2]*sz,pt[1]); c.lineTo(pt[0],pt[1]); c.lineTo(pt[0],pt[1]+pt[3]*sz); c.stroke();
   });
 
-  // header
-  c.fillStyle='rgba(0,0,0,0.65)'; c.fillRect(0,0,W,90);
-  c.font=Math.round(W*0.038)+"px 'Black Ops One',serif";
-  c.fillStyle='#FFD700'; c.textAlign='center'; c.textBaseline='middle';
-  c.shadowColor='rgba(255,215,0,0.6)'; c.shadowBlur=18;
-  c.fillText('⛏️  CataMiner@s 2026  ⛏️', W/2, H*0.06);
-  c.shadowBlur=0;
-  // (logo incluido en tunel_vertical.jpg)
+  // (titulo removido - logo incluido en tunel_vertical.jpg)
 
   // footer ig
   if(ig){
@@ -809,8 +822,8 @@ function renderOverlayOnto(c, W, H, ig){
 
   // óvalo guía — siempre visible para posicionar la cara
   (function drawOval(){
-    var oX = W/2, oY = H*0.42;
-    var oRx = W*0.38, oRy = H*0.32;
+    var oX = W/2, oY = H*0.50;
+    var oRx = W*0.23, oRy = H*0.19;
     c.save();
     c.strokeStyle = lastFace ? 'rgba(255,215,0,0.35)' : 'rgba(255,215,0,0.75)';
     c.lineWidth = 3;
