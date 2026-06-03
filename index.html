@@ -543,7 +543,8 @@ function hideOverlay(){ cvs.style.display='none'; hcvs.style.display='none'; }
 function drawTunnel(c, W, H){
   if(!tunnelReady) return;
   var iW=tunnelImg.width, iH=tunnelImg.height;
-  var scale=Math.min(W/iW, H/iH);
+  // COVER: llena toda la pantalla, recorta si es necesario
+  var scale=Math.max(W/iW, H/iH);
   var dW=iW*scale, dH=iH*scale;
   var dx=(W-dW)/2, dy=(H-dH)/2;
   c.drawImage(tunnelImg, dx, dy, dW, dH);
@@ -803,8 +804,8 @@ function renderOverlayOnto(c, W, H, ig){
 
   // óvalo guía — siempre visible para posicionar la cara
   (function drawOval(){
-    var oX = W/2, oY = H*0.44;
-    var oRx = W*0.30, oRy = H*0.22;
+    var oX = W/2, oY = H*0.42;
+    var oRx = W*0.38, oRy = H*0.26;
     c.save();
     c.strokeStyle = lastFace ? 'rgba(255,215,0,0.35)' : 'rgba(255,215,0,0.75)';
     c.lineWidth = 3;
