@@ -176,6 +176,13 @@
       padding:30px 42px 22px; border:2px solid var(--gold); background:#0a0800;
       width:min(700px,95vw); position:relative;
     }
+    /* En mobile: sin caja, fullscreen */
+    @media (max-width:600px) and (pointer:coarse){
+      .register-box{
+        border:none; background:transparent;
+        width:100%; padding:20px 24px;
+      }
+    }
     #btn-skip-x{
       position:absolute; top:10px; right:14px;
       background:none; border:none; color:var(--muted);
@@ -184,8 +191,8 @@
       transition:color .15s;
     }
     #btn-skip-x:hover{ color:#f44336; }
-    .register-label{ font-family:'Black Ops One',serif; font-size:2.4vw; color:var(--gold); letter-spacing:4px; }
-    .register-sub{ font-size:clamp(12px,1.15vw,15px); color:var(--muted); letter-spacing:2px; margin-top:-5px; }
+    .register-label{ font-family:'Black Ops One',serif; font-size:clamp(20px,4vw,32px); color:var(--gold); letter-spacing:4px; }
+    .register-sub{ font-size:clamp(13px,2vw,18px); color:var(--muted); letter-spacing:2px; margin-top:-5px; }
     #ig-display{
       width:100%; padding:11px 18px;
       background:#111; color:var(--text);
@@ -384,10 +391,11 @@
     <div id="ig-display">@</div>
     <div id="ig-error"></div>
     <!-- Input nativo solo en mobile -->
-    <div id="mobile-input-row" style="display:none; justify-content:center; margin:12px 0;">
+    <div id="mobile-input-row" style="display:none; justify-content:center; align-items:center; gap:0; margin:12px 0; width:100%;">
+      <span style="font-size:28px; color:#FFD700; font-family:'Oswald',sans-serif; font-weight:700; padding:12px 0 12px 16px; background:#111; border:2px solid #FFD700; border-right:none; border-radius:8px 0 0 8px; line-height:1;">@</span>
       <input id="ig-native" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
         placeholder="tuusuario"
-        style="font-size:28px; padding:12px 16px; width:80%; border:2px solid #FFD700; border-radius:8px; background:#111; color:#FFD700; text-align:center; font-family:'Oswald',sans-serif; letter-spacing:2px;" />
+        style="font-size:28px; padding:12px 16px 12px 4px; flex:1; border:2px solid #FFD700; border-left:none; border-radius:0 8px 8px 0; background:#111; color:#FFD700; font-family:'Oswald',sans-serif; letter-spacing:2px; outline:none;" />
     </div>
     <div class="kbd" id="virtual-kbd">
       <div class="kbd-row" id="row-nums"></div>
@@ -472,6 +480,7 @@ var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
 if(isMobile){
   document.getElementById('mobile-input-row').style.display = 'flex';
   document.getElementById('virtual-kbd').style.display = 'none';
+  document.getElementById('ig-display').style.display = 'none';
   var igNative = document.getElementById('ig-native');
   igNative.addEventListener('input', function(){
     resetRegisterTimer();
