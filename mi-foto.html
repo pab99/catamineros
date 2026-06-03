@@ -213,7 +213,7 @@ async function buscar() {
 
       // Botones
       const btnRow = document.createElement('div');
-      btnRow.style.cssText = 'display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:12px;';
+      btnRow.style.cssText = 'display:flex; gap:8px; flex-wrap:nowrap; justify-content:center; margin-top:12px; width:100%;';
 
       // Descargar
       const btnDown = document.createElement('a');
@@ -221,13 +221,13 @@ async function buscar() {
       btnDown.download = 'foto-minera-' + (i+1) + '.jpg';
       btnDown.target = '_blank';
       btnDown.textContent = '⬇ Descargar';
-      btnDown.style.cssText = 'padding:12px 24px;background:#FFD700;color:#000;font-weight:bold;font-size:16px;border-radius:8px;text-decoration:none;';
+      btnDown.style.cssText = 'padding:10px 16px;background:#FFD700;color:#000;font-weight:bold;font-size:14px;border-radius:8px;text-decoration:none;white-space:nowrap;';
       btnDown.addEventListener('click', () => registrarDescarga(f.public_url, ig));
 
       // Eliminar (falso borrado) con confirmación dos pasos
       const btnDel = document.createElement('button');
       btnDel.textContent = '🗑 Eliminar';
-      btnDel.style.cssText = 'padding:12px 20px;background:transparent;color:#888;font-size:14px;border-radius:8px;border:1px solid #444;cursor:pointer;';
+      btnDel.style.cssText = 'padding:10px 16px;background:transparent;color:#888;font-size:14px;border-radius:8px;border:1px solid #444;cursor:pointer;white-space:nowrap;';
 
       let confirmando = false;
       btnDel.addEventListener('click', async () => {
@@ -241,7 +241,7 @@ async function buscar() {
             if (confirmando) {
               confirmando = false;
               btnDel.textContent = '🗑 Eliminar';
-              btnDel.style.cssText = 'padding:12px 20px;background:transparent;color:#888;font-size:14px;border-radius:8px;border:1px solid #444;cursor:pointer;';
+              btnDel.style.cssText = 'padding:10px 16px;background:transparent;color:#888;font-size:14px;border-radius:8px;border:1px solid #444;cursor:pointer;white-space:nowrap;';
             }
           }, 5000);
         } else {
@@ -274,7 +274,7 @@ async function buscar() {
       if (navigator.share) {
         const btnShare = document.createElement('button');
         btnShare.textContent = '↗ Compartir';
-        btnShare.style.cssText = 'padding:12px 24px;background:#222;color:#FFD700;font-weight:bold;font-size:16px;border-radius:8px;border:2px solid #FFD700;cursor:pointer;';
+        btnShare.style.cssText = 'padding:10px 16px;background:#222;color:#FFD700;font-weight:bold;font-size:14px;border-radius:8px;border:2px solid #FFD700;cursor:pointer;white-space:nowrap;';
         btnShare.addEventListener('click', async () => {
           try {
             // Intentar compartir el archivo directo
