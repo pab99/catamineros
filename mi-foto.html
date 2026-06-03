@@ -224,7 +224,52 @@ async function buscar() {
       btnDown.style.cssText = 'padding:12px 24px;background:#FFD700;color:#000;font-weight:bold;font-size:16px;border-radius:8px;text-decoration:none;';
       btnDown.addEventListener('click', () => registrarDescarga(f.public_url, ig));
 
+      // Eliminar (falso borrado) con confirmación dos pasos
+      const btnDel = document.createElement('button');
+      btnDel.textContent = '🗑 Eliminar';
+      btnDel.style.cssText = 'padding:12px 20px;background:transparent;color:#888;font-size:14px;border-radius:8px;border:1px solid #444;cursor:pointer;';
+
+      let confirmando = false;
+      btnDel.addEventListener('click', async () => {
+        if (!confirmando) {
+          // Primer click — pedir confirmación
+          confirmando = true;
+          btnDel.textContent = '⚠️ ¿Confirmar? No se puede deshacer';
+          btnDel.style.cssText = 'padding:12px 20px;background:#500;color:#fff;font-size:14px;border-radius:8px;border:2px solid #f00;cursor:pointer;';
+          // Auto-cancelar si no confirma en 5s
+          setTimeout(() => {
+            if (confirmando) {
+              confirmando = false;
+              btnDel.textContent = '🗑 Eliminar';
+              btnDel.style.cssText = 'padding:12px 20px;background:transparent;color:#888;font-size:14px;border-radius:8px;border:1px solid #444;cursor:pointer;';
+            }
+          }, 5000);
+        } else {
+          // Segundo click — ejecutar
+          btnDel.textContent = '...';
+          btnDel.disabled = true;
+          try {
+            const r = await fetch('/api/ocultar', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ public_url: f.public_url, usuario_ig: ig })
+            });
+            const j = await r.json();
+            if (j.ok) {
+              wrap.innerHTML = '<p style="color:#888;font-size:14px;padding:20px;">✓ Foto eliminada.</p>';
+            } else {
+              btnDel.textContent = 'Error, intentá de nuevo';
+              btnDel.disabled = false;
+            }
+          } catch(e) {
+            btnDel.textContent = 'Error de conexión';
+            btnDel.disabled = false;
+          }
+        }
+      });
+
       btnRow.appendChild(btnDown);
+      if (navigator.share) { btnRow.appendChild(btnShare); }
 
       // Compartir (Web Share API)
       if (navigator.share) {
@@ -255,8 +300,9 @@ async function buscar() {
             if (e.name !== 'AbortError') console.error('Share error:', e);
           }
         });
-        btnRow.appendChild(btnShare);
       }
+
+      btnRow.appendChild(btnDel);
 
       wrap.appendChild(img);
       wrap.appendChild(btnRow);

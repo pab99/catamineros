@@ -178,6 +178,7 @@ const server = http.createServer((req, res) => {
       const { data, error } = await supabase
         .from('fotos_mineros')
         .select('public_url, usuario_ig, filename')
+        .eq('oculta', false)
         .order('id', { ascending: false })
         .limit(100);
 
@@ -189,6 +190,44 @@ const server = http.createServer((req, res) => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true, fotos: data || [] }));
     })();
+    return;
+  }
+
+  // =========================
+  // API: OCULTAR FOTO (falso borrado)
+  // =========================
+  if (req.method === 'POST' && req.url === '/api/ocultar') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', async () => {
+      try {
+        const { public_url, usuario_ig } = JSON.parse(body);
+
+        if (!public_url || !usuario_ig) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ ok: false, error: 'Faltan datos' }));
+        }
+
+        // Solo oculta si el usuario_ig coincide — evita borrados cruzados
+        const { error } = await supabase
+          .from('fotos_mineros')
+          .update({ oculta: true })
+          .eq('public_url', public_url)
+          .eq('usuario_ig', usuario_ig);
+
+        if (error) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ ok: false, error: error.message }));
+        }
+
+        console.log('🗑 Foto ocultada:', usuario_ig, public_url);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      } catch(e) {
+        res.writeHead(400);
+        res.end(JSON.stringify({ ok: false }));
+      }
+    });
     return;
   }
 
@@ -253,6 +292,7 @@ const server = http.createServer((req, res) => {
         .from('fotos_mineros')
         .select('public_url, usuario_ig, filename')
         .eq('usuario_ig', ig)
+        .eq('oculta', false)
         .order('id', { ascending: false })
         .limit(10);
 
