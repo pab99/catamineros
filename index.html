@@ -36,23 +36,23 @@
     /* Slide 1 */
     #slide-1{ background:radial-gradient(ellipse at 50% 40%,#1a1200 0%,#000 70%); }
     #slide-1 .s-title{
-      font-family:'Black Ops One',serif; font-size:9vw; color:var(--gold);
+      font-family:'Black Ops One',serif; font-size:clamp(32px,9vw,72px); color:var(--gold);
       line-height:1; text-shadow:0 0 40px rgba(255,215,0,0.5),4px 4px 0 #000;
       letter-spacing:4px; text-align:center;
     }
     #slide-1 .s-year{
-      font-family:'Black Ops One',serif; font-size:3vw; color:var(--gold-dark);
+      font-family:'Black Ops One',serif; font-size:clamp(16px,3vw,28px); color:var(--gold-dark);
       letter-spacing:12px; margin-top:10px;
     }
     #slide-1 .s-desc{
-      margin-top:28px; font-size:2vw; color:var(--text); letter-spacing:3px;
+      margin-top:28px; font-size:clamp(14px,2vw,20px); color:var(--text); letter-spacing:3px;
       text-align:center; max-width:700px; line-height:1.6;
     }
 
     /* Slide 2 */
     #slide-2{ background:linear-gradient(160deg,#0a0500 0%,#1a0d00 50%,#000 100%); }
     .s-heading{
-      font-family:'Black Ops One',serif; font-size:4.5vw; color:var(--gold);
+      font-family:'Black Ops One',serif; font-size:clamp(18px,4.5vw,38px); color:var(--gold);
       text-align:center; letter-spacing:3px; line-height:1.2;
       text-shadow:0 0 20px rgba(255,215,0,0.4); margin-bottom:24px;
     }
@@ -64,8 +64,8 @@
       background:rgba(255,215,0,0.05); border:1px solid rgba(255,215,0,0.25);
       padding:20px 22px; display:flex; flex-direction:column; align-items:center; gap:5px;
     }
-    .stat-num{ font-family:'Black Ops One',serif; font-size:4.5vw; color:var(--gold); line-height:1; }
-    .stat-label{ font-size:1.35vw; color:var(--text); letter-spacing:1.5px; text-align:center; line-height:1.4; }
+    .stat-num{ font-family:'Black Ops One',serif; font-size:clamp(18px,4.5vw,38px); color:var(--gold); line-height:1; }
+    .stat-label{ font-size:clamp(12px,1.35vw,16px); color:var(--text); letter-spacing:1.5px; text-align:center; line-height:1.4; }
 
     /* Slide 3 */
     #slide-3{ background:linear-gradient(135deg,#000 0%,#0d1a00 60%,#000 100%); }
@@ -78,19 +78,19 @@
       background:rgba(255,255,255,0.04); border:1px solid rgba(255,215,0,0.2);
       padding:20px 26px; min-width:145px;
     }
-    .mineral-icon{ font-size:3.5vw; }
+    .mineral-icon{ font-size:clamp(20px,3.5vw,32px); }
     .mineral-name{ font-family:'Black Ops One',serif; font-size:1.6vw; color:var(--gold); letter-spacing:2px; text-align:center; }
-    .mineral-detail{ font-size:1.15vw; color:var(--muted); text-align:center; line-height:1.4; }
+    .mineral-detail{ font-size:clamp(12px,1.15vw,15px); color:var(--muted); text-align:center; line-height:1.4; }
 
     /* Slide 4 */
     #slide-4{ background:radial-gradient(ellipse at 50% 60%,#1a0a00,#000 70%); }
-    .s-big-icon{ font-size:12vw; margin-bottom:8px; }
+    .s-big-icon{ font-size:clamp(48px,12vw,96px); margin-bottom:8px; }
     .s-cta{
-      font-family:'Black Ops One',serif; font-size:5vw; color:var(--gold);
+      font-family:'Black Ops One',serif; font-size:clamp(22px,5vw,42px); color:var(--gold);
       text-align:center; letter-spacing:4px; line-height:1.2;
       text-shadow:0 0 30px rgba(255,215,0,0.5);
     }
-    .s-cta-sub{ margin-top:16px; font-size:2vw; color:var(--text); letter-spacing:4px; text-align:center; }
+    .s-cta-sub{ margin-top:16px; font-size:clamp(13px,2vw,18px); color:var(--text); letter-spacing:4px; text-align:center; }
 
     /* Corners */
     .corner{ position:absolute; width:60px; height:60px; border-color:var(--gold); border-style:solid; }
@@ -111,7 +111,7 @@
     }
     .catamarca-logo{
       font-family:'Black Ops One',serif; color:#fff;
-      font-size:1.5vw; letter-spacing:4px; text-align:center;
+      font-size:clamp(13px,1.5vw,18px); letter-spacing:4px; text-align:center;
       line-height:1.3; opacity:0.65;
     }
     #btn-comenzar{
@@ -127,11 +127,9 @@
     #screen-camera{ background:#000; display:flex; align-items:center; justify-content:center; }
     #video{
       position:absolute;
-      /* Letterbox 16:9: en portrait ocupa el ancho y se centra verticalmente */
-      width:100%; height:auto; aspect-ratio:16/9;
-      max-height:100%; max-width:calc(100vh * 16 / 9);
-      top:50%; left:50%; transform:translate(-50%,-50%) scaleX(-1);
+      inset:0; width:100%; height:100%;
       object-fit:cover;
+      transform:scaleX(-1);
     }
 
     /* ── OVERLAY ── */
@@ -149,7 +147,7 @@
       position:fixed; top:50%; transform:translateY(-50%);
       pointer-events:none; z-index:110;
       display:none; align-items:center; justify-content:center;
-      font-family:'Black Ops One',serif; font-size:14vw; color:var(--gold);
+      font-family:'Black Ops One',serif; font-size:clamp(56px,14vw,120px); color:var(--gold);
       text-shadow:0 0 40px rgba(255,215,0,0.9),3px 3px 0 #000;
       width:17vw; text-align:center; line-height:1;
     }
@@ -181,18 +179,18 @@
     #btn-skip-x{
       position:absolute; top:10px; right:14px;
       background:none; border:none; color:var(--muted);
-      font-size:1.8vw; cursor:pointer; font-family:'Oswald',sans-serif;
+      font-size:clamp(14px,1.8vw,20px); cursor:pointer; font-family:'Oswald',sans-serif;
       font-weight:700; line-height:1; padding:4px 8px;
       transition:color .15s;
     }
     #btn-skip-x:hover{ color:#f44336; }
     .register-label{ font-family:'Black Ops One',serif; font-size:2.4vw; color:var(--gold); letter-spacing:4px; }
-    .register-sub{ font-size:1.15vw; color:var(--muted); letter-spacing:2px; margin-top:-5px; }
+    .register-sub{ font-size:clamp(12px,1.15vw,15px); color:var(--muted); letter-spacing:2px; margin-top:-5px; }
     #ig-display{
       width:100%; padding:11px 18px;
       background:#111; color:var(--text);
       border:2px solid var(--gold-dark);
-      font-family:'Oswald',sans-serif; font-size:2.2vw; font-weight:700;
+      font-family:'Oswald',sans-serif; font-size:clamp(16px,2.2vw,22px); font-weight:700;
       text-align:center; letter-spacing:3px; min-height:50px; border-radius:4px;
       transition:border-color .2s;
     }
@@ -232,7 +230,7 @@
       padding:20px;
     }
     #gallery-main-photo[src=""]{display:none;}
-    #gallery-title{ font-family:'Black Ops One',serif; color:var(--gold); font-size:3vw; letter-spacing:4px; }
+    #gallery-title{ font-family:'Black Ops One',serif; color:var(--gold); font-size:clamp(18px,3vw,28px); letter-spacing:4px; }
     #gallery-main-photo{
       max-width:50vw; max-height:50vh;
       border:3px solid var(--gold); box-shadow:0 0 40px rgba(255,215,0,0.3);
@@ -282,7 +280,7 @@
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
       <img src="assets/logo_catamarca_gobierno_c_blanca.png" style="height:150px;opacity:0.92;margin-bottom:20px;" alt="Catamarca Gobierno">
-      <div class="s-title">★ CATA<br>MINER@S ★</div>
+      <div class="s-title">⛏️ CATA<br>MINER@S ⛏️</div>
       <div class="s-year">CATAMARCA 2026</div>
       <div class="s-desc">Sacate una foto de minero y llevala de recuerdo del evento</div>
     </div>
@@ -291,7 +289,7 @@
     <div class="slide" id="slide-2">
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
-      <div class="s-heading">★ CATAMARCA MINERA ★</div>
+      <div class="s-heading">⛏️ CATAMARCA MINERA ⛏️</div>
       <div class="stat-grid">
         <div class="stat-card">
           <div class="stat-num">#1</div>
@@ -316,7 +314,7 @@
     <div class="slide" id="slide-3">
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
-      <div class="s-heading">★ RIQUEZA MINERAL DE CATAMARCA ★</div>
+      <div class="s-heading">💎 RIQUEZA MINERAL DE CATAMARCA 💎</div>
       <div class="mineral-grid">
         <div class="mineral-item">
           <div class="mineral-icon">🟤</div>
@@ -345,7 +343,7 @@
     <div class="slide" id="slide-4">
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
-      <div class="s-big-icon" style="font-size:8vw;letter-spacing:2px;">[ FOTO ]</div>
+      <div class="s-big-icon">📸</div>
       <div class="s-cta">¡SACATE UNA<br>FOTO MINERA!</div>
       <div class="s-cta-sub">TOCÁ COMENZAR Y PONÉ TU CASCO</div>
     </div>
@@ -360,7 +358,7 @@
   </div>
 
   <div id="attract-bottom">
-    <button id="btn-comenzar">[ COMENZAR ]</button>
+    <button id="btn-comenzar">⛏️ &nbsp;COMENZAR&nbsp; ⛏️</button>
   </div>
 
 </section>
@@ -375,13 +373,13 @@
 <canvas id="helmet-layer"></canvas>
 <div id="countdown-left"></div>
 <div id="countdown-right"></div>
-<button id="btn-capture">CAPTURAR FOTO</button>
+<button id="btn-capture">📸 &nbsp;CAPTURAR FOTO</button>
 
 <!-- ══════════════════════════════ REGISTER ══════════════════════════════ -->
 <section id="screen-register" class="screen">
   <div class="register-box">
     <button id="btn-skip-x" title="Omitir y continuar">✕</button>
-    <div class="register-label">★ ¿CUÁL ES TU @? ★</div>
+    <div class="register-label">⛏️ ¿CUÁL ES TU @? ⛏️</div>
     <div class="register-sub">INGRESÁ TU INSTAGRAM PARA LA FOTO</div>
     <div id="ig-display">@</div>
     <div id="ig-error"></div>
@@ -400,17 +398,17 @@
     </div>
     <div id="register-timer">Volviendo al inicio en <span id="timer-secs">30</span>s sin actividad</div>
     <div class="register-actions">
-      <button id="save-btn" disabled>[ SACAR FOTO ]</button>
+      <button id="save-btn" disabled>⛏️ &nbsp;SACAR FOTO&nbsp; ⛏️</button>
     </div>
   </div>
 </section>
 
 <!-- ══════════════════════════════ GALLERY ══════════════════════════════ -->
 <section id="screen-gallery" class="screen">
-  <div id="gallery-title">★ TU FOTO MINERA ★</div>
+  <div id="gallery-title">⛏️ TU FOTO MINERA ⛏️</div>
   <img id="gallery-main-photo" src="" alt="foto">
   <div id="gallery-thumbs"></div>
-  <button id="btn-next-miner">CONTINUAR AL SIGUIENTE MINERO</button>
+  <button id="btn-next-miner">CONTINUAR AL SIGUIENTE MINERO ⛏️</button>
   <img src="assets/logo_catamarca_gobierno_c_blanca.png" class="gallery-catamarca-img" alt="Catamarca Gobierno">
 </section>
 
@@ -736,7 +734,7 @@ function countdown(n){
     countdownCancel=function(){ cancelled=true; };
     function tick(){
       if(cancelled){ hideCd(); resolve(); return; }
-      var txt=i>0?String(i):'OK';
+      var txt=i>0?String(i):'📸';
       cdLeft.textContent=cdRight.textContent=txt;
       cdLeft.style.display=cdRight.style.display='flex';
       cdLeft.style.animation=cdRight.style.animation='none';
