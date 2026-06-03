@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Dashboard · CataMiner@s 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Oswald:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --gold:#FFD700; --gold2:#B8860B; --red:#c0392b;
+  --bg:#0a0800; --bg2:#120e00; --bg3:#1c1600;
+  --text:#f0e0a0; --muted:#7a6a30; --border:#3a2a00;
+  --green:#2ecc71; --cyan:#00d4ff;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ background:var(--bg); color:var(--text); font-family:'Oswald',sans-serif; min-height:100vh; }
+
+/* ── LOGIN ── */
+#login-screen{
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background: radial-gradient(ellipse at 50% 40%, #1a1200 0%, #000 70%);
+}
+.login-box{
+  width:360px; padding:48px 40px; border:1px solid var(--border);
+  background:var(--bg2); position:relative;
+}
+.login-box::before{
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(135deg, rgba(255,215,0,0.04) 0%, transparent 50%);
+  pointer-events:none;
+}
+.login-title{
+  font-family:'Black Ops One',serif; font-size:28px; color:var(--gold);
+  text-align:center; letter-spacing:3px; margin-bottom:8px;
+}
+.login-sub{ text-align:center; color:var(--muted); font-size:13px; letter-spacing:4px; margin-bottom:32px; }
+.login-box input{
+  width:100%; padding:12px 16px; background:#0a0800; border:1px solid var(--border);
+  color:var(--text); font-family:'Oswald',sans-serif; font-size:16px;
+  letter-spacing:2px; margin-bottom:12px; outline:none;
+  transition: border-color .2s;
+}
+.login-box input:focus{ border-color:var(--gold); }
+.login-box button{
+  width:100%; padding:14px; background:var(--gold); color:#000;
+  font-family:'Black Ops One',serif; font-size:16px; letter-spacing:3px;
+  border:none; cursor:pointer; transition:background .2s;
+}
+.login-box button:hover{ background:var(--gold2); color:var(--gold); }
+#login-error{ color:var(--red); font-size:13px; text-align:center; margin-top:10px; min-height:18px; }
+
+/* ── APP ── */
+#app{ display:none; }
+
+/* HEADER */
+.dash-header{
+  background:var(--bg2); border-bottom:1px solid var(--border);
+  padding:0 32px; height:60px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+}
+.dash-header .logo{
+  font-family:'Black Ops One',serif; font-size:20px; color:var(--gold); letter-spacing:3px;
+}
+.dash-header .logo span{ color:var(--muted); font-size:13px; font-family:'Oswald',sans-serif; letter-spacing:2px; margin-left:12px; }
+.header-actions{ display:flex; gap:12px; align-items:center; }
+.btn-print{
+  padding:7px 18px; border:1px solid var(--gold); color:var(--gold);
+  background:transparent; font-family:'Oswald',sans-serif; font-size:13px;
+  letter-spacing:2px; cursor:pointer; transition:all .2s;
+}
+.btn-print:hover{ background:var(--gold); color:#000; }
+.btn-logout{ padding:7px 18px; border:1px solid var(--border); color:var(--muted);
+  background:transparent; font-family:'Oswald',sans-serif; font-size:13px;
+  letter-spacing:2px; cursor:pointer; transition:all .2s;
+}
+.btn-logout:hover{ border-color:var(--red); color:var(--red); }
+
+/* MAIN */
+.dash-main{ padding:32px; max-width:1400px; margin:0 auto; }
+
+/* STATS CARDS */
+.stats-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+  gap:16px; margin-bottom:32px;
+}
+.stat-card{
+  background:var(--bg2); border:1px solid var(--border);
+  padding:24px 20px; position:relative; overflow:hidden;
+}
+.stat-card::after{
+  content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+  background:var(--gold);
+}
+.stat-card.green::after{ background:var(--green); }
+.stat-card.cyan::after{ background:var(--cyan); }
+.stat-card.red::after{ background:var(--red); }
+.stat-label{ font-size:11px; letter-spacing:4px; color:var(--muted); margin-bottom:10px; text-transform:uppercase; }
+.stat-value{ font-family:'Black Ops One',serif; font-size:42px; color:var(--gold); line-height:1; }
+.stat-card.green .stat-value{ color:var(--green); }
+.stat-card.cyan .stat-value{ color:var(--cyan); }
+.stat-card.red .stat-value{ color:var(--red); }
+.stat-sub{ font-size:11px; color:var(--muted); margin-top:6px; letter-spacing:1px; }
+
+/* SECTION TITLES */
+.section-title{
+  font-family:'Black Ops One',serif; font-size:14px; letter-spacing:4px;
+  color:var(--muted); text-transform:uppercase; margin-bottom:16px;
+  padding-bottom:8px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+
+/* CHART */
+.chart-section{ margin-bottom:32px; }
+.chart-wrap{
+  background:var(--bg2); border:1px solid var(--border); padding:24px;
+}
+.chart-bars{
+  display:flex; align-items:flex-end; gap:6px; height:120px;
+}
+.chart-bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.chart-bar{
+  width:100%; background:var(--gold); opacity:0.7;
+  transition:opacity .2s; cursor:default; min-height:2px;
+  position:relative;
+}
+.chart-bar:hover{ opacity:1; }
+.chart-bar-label{ font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); }
+.chart-bar-val{ font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--gold); }
+
+/* TOGGLE OCULTAS */
+.toggle-row{ display:flex; align-items:center; gap:10px; }
+.toggle{ position:relative; width:40px; height:22px; }
+.toggle input{ opacity:0; width:0; height:0; }
+.toggle-slider{
+  position:absolute; inset:0; background:var(--border); cursor:pointer;
+  transition:.3s; border-radius:22px;
+}
+.toggle-slider:before{
+  content:''; position:absolute; height:16px; width:16px;
+  left:3px; bottom:3px; background:#666; transition:.3s; border-radius:50%;
+}
+.toggle input:checked + .toggle-slider{ background:var(--gold2); }
+.toggle input:checked + .toggle-slider:before{ transform:translateX(18px); background:var(--gold); }
+.toggle-label{ font-size:12px; color:var(--muted); letter-spacing:2px; }
+
+/* TABLE */
+.table-section{ margin-bottom:32px; }
+.dash-table{ width:100%; border-collapse:collapse; font-size:14px; }
+.dash-table th{
+  text-align:left; padding:10px 14px; background:var(--bg3);
+  font-size:10px; letter-spacing:3px; color:var(--muted); text-transform:uppercase;
+  border-bottom:1px solid var(--border);
+}
+.dash-table td{
+  padding:10px 14px; border-bottom:1px solid rgba(58,42,0,0.4);
+  font-family:'Oswald',sans-serif; font-size:14px;
+}
+.dash-table tr:hover td{ background:rgba(255,215,0,0.03); }
+.dash-table td.ig{ color:var(--gold); font-weight:600; }
+.dash-table td.num{ font-family:'Share Tech Mono',monospace; color:var(--cyan); text-align:right; }
+.dash-table td.num-dl{ font-family:'Share Tech Mono',monospace; color:var(--green); text-align:right; }
+.dash-table td.oculta{ color:var(--red); font-size:11px; letter-spacing:2px; }
+.dash-table td.visible{ color:var(--muted); font-size:11px; }
+.badge{ display:inline-block; padding:2px 8px; border-radius:2px; font-size:10px; letter-spacing:2px; }
+.badge-ok{ background:rgba(46,204,113,0.15); color:var(--green); border:1px solid rgba(46,204,113,0.3); }
+.badge-hidden{ background:rgba(192,57,43,0.15); color:var(--red); border:1px solid rgba(192,57,43,0.3); }
+
+/* LOADING */
+.loading{ text-align:center; padding:60px; color:var(--muted); letter-spacing:4px; font-size:13px; }
+.loading::after{ content:''; animation:dots 1.2s infinite; }
+@keyframes dots{ 0%{content:'.'} 33%{content:'..'} 66%{content:'...'} }
+
+/* LAST UPDATE */
+.last-update{ font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--muted); }
+
+/* PRINT */
+@media print{
+  .dash-header .header-actions{ display:none; }
+  body{ background:white; color:#000; }
+  .stat-card, .chart-wrap, .dash-table th, .dash-table td{ background:white !important; color:#000 !important; border-color:#ccc !important; }
+  .stat-value, .dash-table td.ig{ color:#000 !important; }
+  .stat-label, .section-title, .dash-table th{ color:#666 !important; }
+  #login-screen{ display:none; }
+  #app{ display:block !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-title">⛏ DASHBOARD</div>
+    <div class="login-sub">CATAMINER@S 2026</div>
+    <input type="text" id="user-input" placeholder="USUARIO" autocomplete="off"/>
+    <input type="password" id="pass-input" placeholder="CONTRASEÑA"/>
+    <button onclick="doLogin()">INGRESAR</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="dash-header">
+    <div class="logo">⛏ CATAMINER@S <span>DASHBOARD 2026</span></div>
+    <div class="header-actions">
+      <span class="last-update" id="last-update">—</span>
+      <button class="btn-print" onclick="window.print()">⎙ IMPRIMIR PDF</button>
+      <button class="btn-logout" onclick="doLogout()">SALIR</button>
+    </div>
+  </div>
+
+  <div class="dash-main">
+
+    <!-- STATS -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="loading">cargando</div>
+    </div>
+
+    <!-- CHART -->
+    <div class="chart-section">
+      <div class="section-title">ACTIVIDAD POR HORA</div>
+      <div class="chart-wrap">
+        <div class="chart-bars" id="chart-bars"><div class="loading">cargando</div></div>
+      </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="table-section">
+      <div class="section-title">
+        REGISTRO DE FOTOS
+        <div class="toggle-row">
+          <span class="toggle-label">MOSTRAR OCULTAS</span>
+          <label class="toggle">
+            <input type="checkbox" id="toggle-ocultas" onchange="renderTabla()"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div id="tabla-wrap"><div class="loading">cargando</div></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── AUTH ──
+const CREDS = { user:'admin', pass:'admin' };
+let authed = false;
+
+document.getElementById('pass-input').addEventListener('keydown', e => {
+  if(e.key === 'Enter') doLogin();
+});
+
+function doLogin(){
+  const u = document.getElementById('user-input').value.trim().toLowerCase();
+  const p = document.getElementById('pass-input').value;
+  if(u === CREDS.user && p === CREDS.pass){
+    authed = true;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadAll();
+  } else {
+    document.getElementById('login-error').textContent = 'Credenciales incorrectas';
+    setTimeout(() => document.getElementById('login-error').textContent = '', 2000);
+  }
+}
+
+function doLogout(){
+  authed = false;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+// ── DATA ──
+let allFotos = [];
+
+async function loadAll(){
+  try {
+    const r = await fetch('/api/dashboard');
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error);
+    allFotos = j.fotos || [];
+    renderStats();
+    renderChart();
+    renderTabla();
+    document.getElementById('last-update').textContent =
+      'Actualizado: ' + new Date().toLocaleTimeString('es-AR');
+  } catch(e){
+    console.error(e);
+  }
+}
+
+// ── STATS ──
+function renderStats(){
+  const total      = allFotos.length;
+  const visibles   = allFotos.filter(f => !f.oculta).length;
+  const ocultas    = allFotos.filter(f =>  f.oculta).length;
+  const descargas  = allFotos.reduce((s,f) => s + (f.descargas||0), 0);
+  const usuarios   = new Set(allFotos.map(f => f.usuario_ig).filter(Boolean)).size;
+
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Fotos Totales</div>
+      <div class="stat-value">${total}</div>
+      <div class="stat-sub">${visibles} visibles · ${ocultas} ocultas</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Usuarios Únicos</div>
+      <div class="stat-value">${usuarios}</div>
+      <div class="stat-sub">con usuario de Instagram</div>
+    </div>
+    <div class="stat-card cyan">
+      <div class="stat-label">Descargas</div>
+      <div class="stat-value">${descargas}</div>
+      <div class="stat-sub">total acumulado</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Fotos Ocultas</div>
+      <div class="stat-value">${ocultas}</div>
+      <div class="stat-sub">eliminadas por usuarios</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Promedio Descargas</div>
+      <div class="stat-value">${total ? (descargas/total).toFixed(1) : '0'}</div>
+      <div class="stat-sub">por foto</div>
+    </div>
+  `;
+}
+
+// ── CHART ──
+function renderChart(){
+  // Agrupar por hora (0-23)
+  const hours = Array(24).fill(0);
+  allFotos.forEach(f => {
+    if(!f.created_at) return;
+    const h = new Date(f.created_at).getHours();
+    hours[h]++;
+  });
+
+  const max = Math.max(...hours, 1);
+
+  // Mostrar solo horas con actividad o bloques de 2h
+  const bars = document.getElementById('chart-bars');
+  bars.innerHTML = '';
+
+  hours.forEach((val, h) => {
+    const col = document.createElement('div');
+    col.className = 'chart-bar-col';
+    const heightPct = Math.round((val / max) * 100);
+
+    col.innerHTML = `
+      <div class="chart-bar-val">${val > 0 ? val : ''}</div>
+      <div class="chart-bar" style="height:${Math.max(heightPct,2)}%"
+           title="${h}:00 — ${val} fotos"></div>
+      <div class="chart-bar-label">${String(h).padStart(2,'0')}</div>
+    `;
+    bars.appendChild(col);
+  });
+}
+
+// ── TABLA ──
+function renderTabla(){
+  const mostrarOcultas = document.getElementById('toggle-ocultas').checked;
+  const datos = mostrarOcultas ? allFotos : allFotos.filter(f => !f.oculta);
+
+  if(datos.length === 0){
+    document.getElementById('tabla-wrap').innerHTML =
+      '<div class="loading" style="animation:none">Sin registros</div>';
+    return;
+  }
+
+  // Agrupar por usuario
+  const porUsuario = {};
+  datos.forEach(f => {
+    const u = f.usuario_ig || '(sin usuario)';
+    if(!porUsuario[u]) porUsuario[u] = { fotos:0, descargas:0, ultima:'', ocultas:0 };
+    porUsuario[u].fotos++;
+    porUsuario[u].descargas += f.descargas || 0;
+    porUsuario[u].ocultas += f.oculta ? 1 : 0;
+    if(!porUsuario[u].ultima || f.created_at > porUsuario[u].ultima)
+      porUsuario[u].ultima = f.created_at;
+  });
+
+  const rows = Object.entries(porUsuario)
+    .sort((a,b) => b[1].fotos - a[1].fotos)
+    .map(([ig, d]) => {
+      const fecha = d.ultima
+        ? new Date(d.ultima).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'})
+        : '—';
+      const estadoBadge = d.ocultas > 0
+        ? `<span class="badge badge-hidden">${d.ocultas} OCULTA${d.ocultas>1?'S':''}</span>`
+        : `<span class="badge badge-ok">OK</span>`;
+      return `<tr>
+        <td class="ig">@${ig}</td>
+        <td class="num">${d.fotos}</td>
+        <td class="num-dl">${d.descargas}</td>
+        <td>${estadoBadge}</td>
+        <td style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted)">${fecha}</td>
+      </tr>`;
+    }).join('');
+
+  // Tabla detalle de todas las fotos
+  const rowsDetalle = datos.map(f => {
+    const fecha = f.created_at
+      ? new Date(f.created_at).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'})
+      : '—';
+    const estado = f.oculta
+      ? '<span class="badge badge-hidden">OCULTA</span>'
+      : '<span class="badge badge-ok">VISIBLE</span>';
+    const thumb = f.public_url
+      ? `<a href="${f.public_url}" target="_blank" style="color:var(--cyan);font-size:11px;text-decoration:none;">ver ↗</a>`
+      : '—';
+    return `<tr>
+      <td class="ig">@${f.usuario_ig||'—'}</td>
+      <td style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.filename||'—'}</td>
+      <td class="num-dl">${f.descargas||0}</td>
+      <td>${estado}</td>
+      <td style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted)">${fecha}</td>
+      <td>${thumb}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('tabla-wrap').innerHTML = `
+    <h4 style="font-family:'Black Ops One',serif;font-size:12px;letter-spacing:3px;color:var(--muted);margin-bottom:12px;">POR USUARIO</h4>
+    <div style="overflow-x:auto;margin-bottom:32px;">
+      <table class="dash-table">
+        <thead><tr>
+          <th>Instagram</th><th style="text-align:right">Fotos</th>
+          <th style="text-align:right">Descargas</th><th>Estado</th><th>Última actividad</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <h4 style="font-family:'Black Ops One',serif;font-size:12px;letter-spacing:3px;color:var(--muted);margin-bottom:12px;">DETALLE COMPLETO</h4>
+    <div style="overflow-x:auto;">
+      <table class="dash-table">
+        <thead><tr>
+          <th>Instagram</th><th>Archivo</th>
+          <th style="text-align:right">Descargas</th><th>Estado</th><th>Fecha/Hora</th><th>Foto</th>
+        </tr></thead>
+        <tbody>${rowsDetalle}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// Auto-refresh cada 30s
+setInterval(() => { if(authed) loadAll(); }, 30000);
+</script>
+</body>
+</html>

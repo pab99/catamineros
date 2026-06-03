@@ -194,6 +194,28 @@ const server = http.createServer((req, res) => {
   }
 
   // =========================
+  // API: DASHBOARD (todas las fotos, sin filtro oculta)
+  // =========================
+  if (req.method === 'GET' && req.url === '/api/dashboard') {
+    (async () => {
+      const { data, error } = await supabase
+        .from('fotos_mineros')
+        .select('id, usuario_ig, filename, public_url, descargas, oculta, created_at, evento')
+        .order('id', { ascending: false })
+        .limit(1000);
+
+      if (error) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ ok: false, error: error.message }));
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, fotos: data || [] }));
+    })();
+    return;
+  }
+
+  // =========================
   // API: OCULTAR FOTO (falso borrado)
   // =========================
   if (req.method === 'POST' && req.url === '/api/ocultar') {
