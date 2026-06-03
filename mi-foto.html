@@ -204,22 +204,62 @@ async function buscar() {
 
     json.fotos.forEach((f, i) => {
       const wrap = document.createElement('div');
-      wrap.style.cssText = 'margin-bottom:20px;';
+      wrap.style.cssText = 'margin-bottom:28px; display:flex; flex-direction:column; align-items:center;';
 
       const img = document.createElement('img');
       img.src = f.public_url;
       img.alt = 'Foto de @' + ig;
       img.crossOrigin = 'anonymous';
 
-      const btn = document.createElement('a');
-      btn.href = f.public_url;
-      btn.download = 'foto-minera-' + (i+1) + '.jpg';
-      btn.target = '_blank';
-      btn.textContent = '⬇ Descargar foto';
-      btn.style.cssText = 'display:block;margin:10px auto;padding:12px 24px;background:#FFD700;color:#000;font-weight:bold;font-size:16px;border-radius:8px;text-decoration:none;width:fit-content;';
+      // Botones
+      const btnRow = document.createElement('div');
+      btnRow.style.cssText = 'display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:12px;';
+
+      // Descargar
+      const btnDown = document.createElement('a');
+      btnDown.href = f.public_url;
+      btnDown.download = 'foto-minera-' + (i+1) + '.jpg';
+      btnDown.target = '_blank';
+      btnDown.textContent = '⬇ Descargar';
+      btnDown.style.cssText = 'padding:12px 24px;background:#FFD700;color:#000;font-weight:bold;font-size:16px;border-radius:8px;text-decoration:none;';
+      btnDown.addEventListener('click', () => registrarDescarga(f.public_url, ig));
+
+      btnRow.appendChild(btnDown);
+
+      // Compartir (Web Share API)
+      if (navigator.share) {
+        const btnShare = document.createElement('button');
+        btnShare.textContent = '↗ Compartir';
+        btnShare.style.cssText = 'padding:12px 24px;background:#222;color:#FFD700;font-weight:bold;font-size:16px;border-radius:8px;border:2px solid #FFD700;cursor:pointer;';
+        btnShare.addEventListener('click', async () => {
+          try {
+            // Intentar compartir el archivo directo
+            const resp = await fetch(f.public_url);
+            const blob = await resp.blob();
+            const file = new File([blob], 'foto-minera.jpg', { type: 'image/jpeg' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                title: '⛏️ Mi Foto Minera - CataMiner@s 2026',
+                text: '¡Mirá mi foto en el PhotoBooth minero de Catamarca!',
+                files: [file]
+              });
+            } else {
+              // Fallback: compartir solo el link
+              await navigator.share({
+                title: '⛏️ Mi Foto Minera - CataMiner@s 2026',
+                text: '¡Mirá mi foto en el PhotoBooth minero de Catamarca!',
+                url: f.public_url
+              });
+            }
+          } catch(e) {
+            if (e.name !== 'AbortError') console.error('Share error:', e);
+          }
+        });
+        btnRow.appendChild(btnShare);
+      }
 
       wrap.appendChild(img);
-      wrap.appendChild(btn);
+      wrap.appendChild(btnRow);
       res.appendChild(wrap);
     });
 
@@ -227,6 +267,16 @@ async function buscar() {
     res.innerHTML = '<p class="msg">Error de conexión</p>';
     console.error(e);
   }
+}
+
+async function registrarDescarga(url, ig) {
+  try {
+    await fetch('/api/descarga', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ public_url: url, usuario_ig: ig })
+    });
+  } catch(e) { /* silencioso */ }
 }
 </script>
 

@@ -193,6 +193,47 @@ const server = http.createServer((req, res) => {
   }
 
   // =========================
+  // API: REGISTRAR DESCARGA
+  // =========================
+  if (req.method === 'POST' && req.url === '/api/descarga') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', async () => {
+      try {
+        const { public_url, usuario_ig } = JSON.parse(body);
+
+        // Incrementar contador en la fila correspondiente
+        const { data: foto } = await supabase
+          .from('fotos_mineros')
+          .select('id, descargas')
+          .eq('public_url', public_url)
+          .single();
+
+        if (foto) {
+          await supabase
+            .from('fotos_mineros')
+            .update({ descargas: (foto.descargas || 0) + 1 })
+            .eq('id', foto.id);
+        }
+
+        // Insertar registro en tabla de eventos
+        await supabase.from('eventos_descarga').insert([{
+          usuario_ig: usuario_ig || '',
+          public_url: public_url,
+          evento: 'cataminers_2026'
+        }]);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      } catch(e) {
+        res.writeHead(200); // silencioso para el cliente
+        res.end(JSON.stringify({ ok: false }));
+      }
+    });
+    return;
+  }
+
+  // =========================
   // API: BUSCAR POR INSTAGRAM (para mi-foto.html)
   // =========================
   if (req.method === 'GET' && req.url.startsWith('/api/buscar')) {
