@@ -203,20 +203,20 @@
     .kbd{ display:flex; flex-direction:column; gap:5px; width:100%; }
     .kbd-row{ display:flex; gap:5px; justify-content:center; }
     .kbtn{
-      flex:1; max-width:60px; height:44px;
+      flex:1; max-width:80px; height:64px;
       background:#1a1400; color:var(--text); border:1px solid #4a3a00;
-      border-radius:5px; font-family:'Oswald',sans-serif; font-size:1.25vw; font-weight:700;
+      border-radius:8px; font-family:'Oswald',sans-serif; font-size:22px; font-weight:700;
       cursor:pointer; display:flex; align-items:center; justify-content:center;
       transition:background .1s, transform .08s;
       -webkit-tap-highlight-color:transparent; user-select:none;
     }
     .kbtn:active{ background:#3a2a00; transform:scale(0.92); }
-    .kbtn.wide{ max-width:none; flex:2; }
+    .kbtn.wide{ max-width:none; flex:2; font-size:18px; }
     .kbtn.gold{ background:var(--gold); color:#000; border-color:var(--gold-dark); }
     .kbtn.gold:active{ background:var(--gold-dark); }
-    .kbtn.del{ background:#2a0000; border-color:#6a0000; font-size:1.4vw; }
+    .kbtn.del{ background:#2a0000; border-color:#6a0000; font-size:22px; }
     .kbtn.del:active{ background:#4a0000; }
-    #register-timer{ font-size:1.1vw; color:var(--muted); letter-spacing:2px; }
+    #register-timer{ font-size:16px; color:var(--muted); letter-spacing:2px; }
     #register-timer span{ color:var(--gold); font-weight:700; }
     .register-actions{ display:flex; justify-content:center; margin-top:2px; }
     #save-btn{
@@ -283,7 +283,7 @@
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
       <img src="assets/logo_catamarca_gobierno_c_blanca.png" style="height:150px;opacity:0.92;margin-bottom:20px;" alt="Catamarca Gobierno">
-      <div class="s-title">⛏️ CATA<br>MINER@S ⛏️</div>
+      <div class="s-title">★ CATA<br>MINER@S ★</div>
       <div class="s-year">CATAMARCA 2026</div>
       <div class="s-desc">Sacate una foto de minero y llevala de recuerdo del evento</div>
     </div>
@@ -292,7 +292,7 @@
     <div class="slide" id="slide-2">
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
-      <div class="s-heading">⛏️ CATAMARCA MINERA ⛏️</div>
+      <div class="s-heading">★ CATAMARCA MINERA ★</div>
       <div class="stat-grid">
         <div class="stat-card">
           <div class="stat-num">#1</div>
@@ -317,7 +317,7 @@
     <div class="slide" id="slide-3">
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
-      <div class="s-heading">💎 RIQUEZA MINERAL DE CATAMARCA 💎</div>
+      <div class="s-heading">★ RIQUEZA MINERAL DE CATAMARCA ★</div>
       <div class="mineral-grid">
         <div class="mineral-item">
           <div class="mineral-icon">🟤</div>
@@ -346,7 +346,7 @@
     <div class="slide" id="slide-4">
       <div class="corner tl"></div><div class="corner tr"></div>
       <div class="corner bl"></div><div class="corner br"></div>
-      <div class="s-big-icon">📸</div>
+      <div class="s-big-icon" style="font-size:8vw;letter-spacing:2px;">[ FOTO ]</div>
       <div class="s-cta">¡SACATE UNA<br>FOTO MINERA!</div>
       <div class="s-cta-sub">TOCÁ COMENZAR Y PONÉ TU CASCO</div>
     </div>
@@ -361,7 +361,7 @@
   </div>
 
   <div id="attract-bottom">
-    <button id="btn-comenzar">⛏️ &nbsp;COMENZAR&nbsp; ⛏️</button>
+    <button id="btn-comenzar">[ COMENZAR ]</button>
   </div>
 
 </section>
@@ -376,17 +376,23 @@
 <canvas id="helmet-layer"></canvas>
 <div id="countdown-left"></div>
 <div id="countdown-right"></div>
-<button id="btn-capture">📸 &nbsp;CAPTURAR FOTO</button>
+<button id="btn-capture">CAPTURAR FOTO</button>
 
 <!-- ══════════════════════════════ REGISTER ══════════════════════════════ -->
 <section id="screen-register" class="screen">
   <div class="register-box">
     <button id="btn-skip-x" title="Omitir y continuar">✕</button>
-    <div class="register-label">⛏️ ¿CUÁL ES TU @? ⛏️</div>
+    <div class="register-label">★ ¿CUÁL ES TU @? ★</div>
     <div class="register-sub">INGRESÁ TU INSTAGRAM PARA LA FOTO</div>
     <div id="ig-display">@</div>
     <div id="ig-error"></div>
-    <div class="kbd">
+    <!-- Input nativo solo en mobile -->
+    <div id="mobile-input-row" style="display:none; justify-content:center; margin:12px 0;">
+      <input id="ig-native" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"
+        placeholder="tuusuario"
+        style="font-size:28px; padding:12px 16px; width:80%; border:2px solid #FFD700; border-radius:8px; background:#111; color:#FFD700; text-align:center; font-family:'Oswald',sans-serif; letter-spacing:2px;" />
+    </div>
+    <div class="kbd" id="virtual-kbd">
       <div class="kbd-row" id="row-nums"></div>
       <div class="kbd-row" id="row-q"></div>
       <div class="kbd-row" id="row-a"></div>
@@ -395,17 +401,17 @@
     </div>
     <div id="register-timer">Volviendo al inicio en <span id="timer-secs">30</span>s sin actividad</div>
     <div class="register-actions">
-      <button id="save-btn" disabled>⛏️ &nbsp;SACAR FOTO&nbsp; ⛏️</button>
+      <button id="save-btn" disabled>[ SACAR FOTO ]</button>
     </div>
   </div>
 </section>
 
 <!-- ══════════════════════════════ GALLERY ══════════════════════════════ -->
 <section id="screen-gallery" class="screen">
-  <div id="gallery-title">⛏️ TU FOTO MINERA ⛏️</div>
+  <div id="gallery-title">★ TU FOTO MINERA ★</div>
   <img id="gallery-main-photo" src="" alt="foto">
   <div id="gallery-thumbs"></div>
-  <button id="btn-next-miner">CONTINUAR AL SIGUIENTE MINERO ⛏️</button>
+  <button id="btn-next-miner">CONTINUAR AL SIGUIENTE MINERO</button>
   <img src="assets/logo_catamarca_gobierno_c_blanca.png" class="gallery-catamarca-img" alt="Catamarca Gobierno">
 </section>
 
@@ -461,6 +467,25 @@ logoImg.src = 'assets/logo_catamarca_gobierno_c_blanca.png';
 // ── STATE ──
 var igHandle          = '';
 var igValue           = '';
+
+// ── DETECCION MOBILE ──
+var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+               ('ontouchstart' in window && navigator.maxTouchPoints > 1);
+
+if(isMobile){
+  document.getElementById('mobile-input-row').style.display = 'flex';
+  document.getElementById('virtual-kbd').style.display = 'none';
+  var igNative = document.getElementById('ig-native');
+  igNative.addEventListener('input', function(){
+    resetRegisterTimer();
+    igValue = igNative.value.replace(/[^a-zA-Z0-9._]/g,'').slice(0,30);
+    igNative.value = igValue;
+    igUpdateDisplay();
+  });
+  igNative.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); saveBtn.click(); }
+  });
+}
 var lastFace          = null;
 var lastAngle         = 0;   // radianes, inclinación de la cabeza
 var photoUrl          = '';
@@ -515,13 +540,20 @@ function resizeCvs(){
 function showOverlay(){ cvs.style.display='block'; hcvs.style.display='block'; }
 function hideOverlay(){ cvs.style.display='none'; hcvs.style.display='none'; }
 
+function drawTunnel(c, W, H){
+  if(!tunnelReady) return;
+  var iW=tunnelImg.width, iH=tunnelImg.height;
+  var scale=Math.min(W/iW, H/iH);
+  var dW=iW*scale, dH=iH*scale;
+  var dx=(W-dW)/2, dy=(H-dH)/2;
+  c.drawImage(tunnelImg, dx, dy, dW, dH);
+}
+
 function renderFrame(ig){
   ig = ig||'';
   var W=cvs.width, H=cvs.height;
-  // Canvas 1: túnel
   ctx.clearRect(0,0,W,H);
-  if(tunnelReady){ ctx.drawImage(tunnelImg,0,0,W,H); }
-  // Canvas 2: casco + UI (siempre encima)
+  drawTunnel(ctx, W, H);
   hctx.clearRect(0,0,W,H);
   renderOverlayOnto(hctx, W, H, ig);
 }
@@ -705,7 +737,7 @@ function countdown(n){
     countdownCancel=function(){ cancelled=true; };
     function tick(){
       if(cancelled){ hideCd(); resolve(); return; }
-      var txt=i>0?String(i):'📸';
+      var txt=i>0?String(i):'OK';
       cdLeft.textContent=cdRight.textContent=txt;
       cdLeft.style.display=cdRight.style.display='flex';
       cdLeft.style.animation=cdRight.style.animation='none';
@@ -731,7 +763,7 @@ function capture(ig){
   sc.restore();
 
   // 2. Renderizar el tunnel SVG directamente
-  if(tunnelReady){ sc.drawImage(tunnelImg,0,0,snap.width,snap.height); }
+  if(tunnelReady){ drawTunnel(sc, snap.width, snap.height); }
 
   // 3. Renderizar todos los elementos del overlay en el snap (misma lógica que renderFrame)
   renderOverlayOnto(sc, snap.width, snap.height, ig);
@@ -952,6 +984,7 @@ document.getElementById('btn-comenzar').addEventListener('click',function(e){ pl
   stopSlideLoop();
   captureTriggered=false;
   igHandle=''; igValue=''; igUpdateDisplay();
+  if(isMobile && document.getElementById('ig-native')) document.getElementById('ig-native').value='';
   go('screen-register');
   startRegisterTimer();
 });
